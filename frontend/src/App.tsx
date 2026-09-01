@@ -9,6 +9,7 @@ import { AccountantPortal } from './pages/AccountantPortal';
 import { ParentPortal } from './pages/ParentPortal';
 import { StudentPortal } from './pages/StudentPortal';
 import { StudentDirectory } from './components/StudentDirectory';
+import { StaffDirectory } from './components/StaffDirectory';
 
 const MainLayout: React.FC = () => {
   const { user, role, isRestoring } = useAuth();
@@ -25,6 +26,9 @@ const MainLayout: React.FC = () => {
   const renderDashboardContent = () => {
     if (activeTab === 'students') {
       return <StudentDirectory />;
+    }
+    if (activeTab === 'staff') {
+      return <StaffDirectory />;
     }
 
     switch (role) {
