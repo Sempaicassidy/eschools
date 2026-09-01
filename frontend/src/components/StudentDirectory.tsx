@@ -751,307 +751,246 @@ export const StudentDirectory: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 2: VIEW COMPREHENSIVE STUDENT PROFILE & DOSSIER */}
+      {/* MODAL 2: BREATHTAKING EXECUTIVE STUDENT DOSSIER PROFILE */}
       {viewingStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl bg-white rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 my-6 border border-slate-100">
-            {/* Modal Header Bar */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-5">
-              <div className="flex items-center gap-4">
-                {/* Photo / Avatar */}
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl text-white shadow-lg ${
-                  viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-600 via-blue-600 to-indigo-700' : 'bg-gradient-to-tr from-rose-500 via-pink-600 to-purple-700'
-                }`}>
-                  {viewingStudent.photo ? (
-                    <img src={viewingStudent.photo} alt={viewingStudent.first_name} className="w-full h-full object-cover rounded-2xl" />
-                  ) : (
-                    viewingStudent.first_name.charAt(0)
-                  )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-3 md:p-6 overflow-y-auto">
+          <div className="w-full max-w-5xl bg-white rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 my-auto border border-slate-200">
+            {/* Dossier Header Bar */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-sky-50 text-sky-700 rounded-2xl">
+                  <FileText className="w-6 h-6" />
                 </div>
-
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-black text-slate-900 text-xl md:text-2xl leading-snug">
-                      {viewingStudent.first_name} {viewingStudent.middle_name} {viewingStudent.last_name}
-                    </h2>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-                      viewingStudent.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                      viewingStudent.status === 'suspended' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
-                      'bg-amber-50 text-amber-700 border border-amber-200'
-                    }`}>
-                      {viewingStudent.status}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1 font-medium">
-                    <span className="font-mono bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-800">
-                      Admission No: {viewingStudent.admission_number}
-                    </span>
-                    <span>• Age: {calculateAge(viewingStudent.date_of_birth)}</span>
-                    <span>• Gender: <strong className="capitalize text-slate-800">{viewingStudent.gender}</strong></span>
-                    <span>• Nationality: <strong className="text-slate-800">{viewingStudent.nationality || 'Tanzanian'}</strong></span>
-                  </div>
+                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Student Academic Dossier & Profile</h2>
+                  <p className="text-xs text-slate-500 font-medium">Official student file and comprehensive school record.</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all"
-                  title="Print Student Dossier"
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
                 >
-                  <Printer className="w-4 h-4 text-slate-600" />
-                  <span className="hidden sm:inline">Print File</span>
+                  <Printer className="w-4 h-4" />
+                  <span className="hidden sm:inline">Print Student File</span>
                 </button>
-                <button onClick={() => setViewingStudent(null)} className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100">
-                  <X className="w-5 h-5" />
+                <button
+                  onClick={() => setViewingStudent(null)}
+                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                >
+                  <X className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            {/* Profile Navigation Tabs */}
-            <div className="flex flex-wrap items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl text-xs font-bold">
-              <button
-                onClick={() => setActiveProfileTab('overview')}
-                className={`px-4 py-2 rounded-xl transition-all ${
-                  activeProfileTab === 'overview' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Profile & Bio Overview
-              </button>
-              <button
-                onClick={() => setActiveProfileTab('academic')}
-                className={`px-4 py-2 rounded-xl transition-all ${
-                  activeProfileTab === 'academic' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Academic & Class Teachers
-              </button>
-              <button
-                onClick={() => setActiveProfileTab('residency')}
-                className={`px-4 py-2 rounded-xl transition-all ${
-                  activeProfileTab === 'residency' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Hostel & Boarding
-              </button>
-              <button
-                onClick={() => setActiveProfileTab('marks')}
-                className={`px-4 py-2 rounded-xl transition-all ${
-                  activeProfileTab === 'marks' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Exam Results & Grades
-              </button>
-              <button
-                onClick={() => setActiveProfileTab('guardian')}
-                className={`px-4 py-2 rounded-xl transition-all ${
-                  activeProfileTab === 'guardian' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Parent & Guardian Contacts
-              </button>
-            </div>
-
-            {/* TAB CONTENT 1: OVERVIEW */}
-            {activeProfileTab === 'overview' && (
-              <div className="space-y-4 text-xs">
-                <div className="grid sm:grid-cols-3 gap-4">
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400 block">Assigned Class</span>
-                    <p className="text-base font-black text-slate-900">
-                      {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A
-                    </p>
+            {/* 2-Column Executive Dossier Grid */}
+            <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-6 text-xs">
+              
+              {/* LEFT COLUMN: STUDENT ID CARD & BIO STATS */}
+              <div className="space-y-5">
+                {/* ID Badge Card */}
+                <div className="bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden space-y-4">
+                  <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
+                    <GraduationCap className="w-32 h-32 text-white" />
                   </div>
 
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400 block">Residency Type</span>
-                    <p className="text-base font-black text-indigo-950 capitalize">
-                      {viewingStudent.boarding_status === 'boarding' ? 'Boarder (Hostel Resident)' : 'Day Scholar'}
-                    </p>
-                  </div>
-
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-400 block">Fee Balance Status</span>
-                    <p className="text-base font-black text-emerald-700">
-                      TZS {viewingStudent.fee_balance !== undefined ? viewingStudent.fee_balance.toLocaleString() : '150,000'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {/* Bio Details */}
-                  <div className="border border-slate-100 bg-white p-4 rounded-2xl space-y-2.5">
-                    <h4 className="font-extrabold text-slate-900 text-sm border-b border-slate-100 pb-2">Personal Information</h4>
-                    <div className="space-y-1.5 text-slate-600">
-                      <p><strong className="text-slate-900">Full Name:</strong> {viewingStudent.first_name} {viewingStudent.middle_name} {viewingStudent.last_name}</p>
-                      <p><strong className="text-slate-900">Date of Birth:</strong> {viewingStudent.date_of_birth || '15th March 2010'} ({calculateAge(viewingStudent.date_of_birth)})</p>
-                      <p><strong className="text-slate-900">Gender:</strong> <span className="capitalize">{viewingStudent.gender}</span></p>
-                      <p><strong className="text-slate-900">Religion:</strong> {viewingStudent.religion || 'Christianity'}</p>
-                      <p><strong className="text-slate-900">Blood Group:</strong> {viewingStudent.blood_group || 'O+'}</p>
+                  <div className="flex flex-col items-center text-center space-y-3">
+                    {/* Photo with Glowing Ring */}
+                    <div className="relative">
+                      <div className={`w-24 h-24 rounded-3xl flex items-center justify-center font-black text-3xl text-white shadow-2xl border-4 border-white/20 ${
+                        viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-500 to-blue-600' : 'bg-gradient-to-tr from-rose-500 to-pink-600'
+                      }`}>
+                        {viewingStudent.photo ? (
+                          <img src={viewingStudent.photo} alt={viewingStudent.first_name} className="w-full h-full object-cover rounded-3xl" />
+                        ) : (
+                          viewingStudent.first_name.charAt(0)
+                        )}
+                      </div>
+                      <span className={`absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow-md ${
+                        viewingStudent.status === 'active' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+                      }`}>
+                        {viewingStudent.status}
+                      </span>
                     </div>
-                  </div>
 
-                  {/* Guardian & Admission Details */}
-                  <div className="border border-slate-100 bg-white p-4 rounded-2xl space-y-2.5">
-                    <h4 className="font-extrabold text-slate-900 text-sm border-b border-slate-100 pb-2">Admission & Guardian Overview</h4>
-                    <div className="space-y-1.5 text-slate-600">
-                      <p><strong className="text-slate-900">Admission Date:</strong> {viewingStudent.admission_date || '2026-01-10'}</p>
-                      <p><strong className="text-slate-900">Previous School:</strong> {viewingStudent.previous_school || 'Mwenge Primary School'}</p>
-                      <p><strong className="text-slate-900">Primary Guardian:</strong> {viewingStudent.guardian_name || 'Juma Mkwawa'}</p>
-                      <p><strong className="text-slate-900">Guardian Phone:</strong> {viewingStudent.guardian_phone || '+255 784 112 233'}</p>
-                      <p><strong className="text-slate-900">Medical Notes:</strong> {viewingStudent.medical_notes || 'No known chronic allergies'}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB CONTENT 2: ACADEMIC & CLASS TEACHERS */}
-            {activeProfileTab === 'academic' && (
-              <div className="space-y-4 text-xs">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {/* Class Teacher Box */}
-                  <div className="bg-sky-50/70 border border-sky-200/80 p-5 rounded-2xl space-y-2">
-                    <div className="flex items-center gap-2 text-sky-800 font-bold text-sm">
-                      <UserCog className="w-5 h-5 text-sky-600" />
-                      <span>Mwalimu wa Darasa (Class Teacher)</span>
-                    </div>
-                    <p className="text-base font-black text-slate-900">
-                      {viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}
-                    </p>
-                    <p className="text-slate-500 font-medium text-xs">
-                      Responsible for academic monitoring, term reports, and daily student guidance for {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'}.
-                    </p>
-                  </div>
-
-                  {/* Class Monitor Box */}
-                  <div className="bg-indigo-50/70 border border-indigo-200/80 p-5 rounded-2xl space-y-2">
-                    <div className="flex items-center gap-2 text-indigo-800 font-bold text-sm">
-                      <UserCheck className="w-5 h-5 text-indigo-600" />
-                      <span>Class Monitor (Monita wa Darasa)</span>
-                    </div>
-                    <p className="text-base font-black text-slate-900">
-                      {viewingStudent.class_monitor_name || 'Josephat K. Mwita'}
-                    </p>
-                    <p className="text-slate-500 font-medium text-xs">
-                      Class prefect responsible for class discipline, subject logbook signatures, and classroom order.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB CONTENT 3: HOSTEL & BOARDING */}
-            {activeProfileTab === 'residency' && (
-              <div className="space-y-4 text-xs">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {/* Hostel Details Box */}
-                  <div className="bg-indigo-50/70 border border-indigo-200/80 p-5 rounded-2xl space-y-2">
-                    <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm">
-                      <Home className="w-5 h-5 text-indigo-600" />
-                      <span>Bweni la Mwanafunzi (Hostel / Dormitory)</span>
-                    </div>
-                    <p className="text-base font-black text-slate-900">
-                      {viewingStudent.boarding_status === 'boarding'
-                        ? (viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B - Room 12)')
-                        : 'Day Scholar (No Hostel Allocated)'}
-                    </p>
-                    <p className="text-slate-500 font-medium text-xs">
-                      Resident dormitory block assigned for student boarding and evening prep studies.
-                    </p>
-                  </div>
-
-                  {/* Hostel Master Box */}
-                  <div className="bg-purple-50/70 border border-purple-200/80 p-5 rounded-2xl space-y-2">
-                    <div className="flex items-center gap-2 text-purple-900 font-bold text-sm">
-                      <UserCog className="w-5 h-5 text-purple-600" />
-                      <span>Mwalimu Msimamizi wa Bweni (Hostel Master/Matron)</span>
-                    </div>
-                    <p className="text-base font-black text-slate-900">
-                      {viewingStudent.boarding_status === 'boarding'
-                        ? (viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro')
-                        : 'N/A (Day Scholar)'}
-                    </p>
-                    <p className="text-slate-500 font-medium text-xs">
-                      Patron/Matron in charge of evening welfare, dorm cleanliness, and prep attendance.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB CONTENT 4: EXAM RESULTS & MARKS */}
-            {activeProfileTab === 'marks' && (
-              <div className="space-y-4 text-xs">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-black text-slate-900 text-sm">Term II Examination Results Summary</h4>
-                  <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
-                    Class Rank: #3 / 45 Students (Average: 82.8% - Grade A)
-                  </span>
-                </div>
-
-                <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-xs">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 text-slate-500 font-bold text-[11px] uppercase border-b border-slate-100">
-                        <th className="p-3">Subject</th>
-                        <th className="p-3">Score</th>
-                        <th className="p-3">Grade</th>
-                        <th className="p-3">Points</th>
-                        <th className="p-3">Teacher Remarks</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                      {MOCK_MARKS.map((m) => (
-                        <tr key={m.id}>
-                          <td className="p-3 font-bold text-slate-900">{m.subject_name}</td>
-                          <td className="p-3 font-mono font-bold text-slate-800">{m.score}%</td>
-                          <td className="p-3">
-                            <span className="px-2 py-0.5 rounded font-black text-[10px] bg-emerald-100 text-emerald-800">
-                              Grade {m.grade}
-                            </span>
-                          </td>
-                          <td className="p-3 font-bold">{m.points} pts</td>
-                          <td className="p-3 text-slate-500">{m.remarks}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* TAB CONTENT 5: GUARDIANS */}
-            {activeProfileTab === 'guardian' && (
-              <div className="space-y-4 text-xs">
-                <div className="bg-sky-50/70 border border-sky-200/80 p-5 rounded-2xl space-y-3">
-                  <h4 className="font-black text-sky-950 text-sm flex items-center gap-2">
-                    <User className="w-4 h-4 text-sky-600" /> Primary Parent & Guardian Details
-                  </h4>
-                  <div className="grid sm:grid-cols-2 gap-3 text-slate-700">
                     <div>
-                      <span className="text-slate-400 font-semibold block text-[10px]">Guardian Full Name</span>
-                      <span className="font-extrabold text-slate-900 text-sm">{viewingStudent.guardian_name || 'Juma Mkwawa'}</span>
+                      <h3 className="text-xl font-black tracking-tight leading-snug text-white">
+                        {viewingStudent.first_name} {viewingStudent.middle_name || ''} {viewingStudent.last_name}
+                      </h3>
+                      <p className="text-sky-300 font-mono text-xs mt-0.5 font-bold">
+                        ADM: {viewingStudent.admission_number}
+                      </p>
                     </div>
-                    <div>
-                      <span className="text-slate-400 font-semibold block text-[10px]">Contact Phone Number</span>
-                      <span className="font-extrabold text-sky-800 text-sm flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5" />
-                        {viewingStudent.guardian_phone || '+255 784 112 233'}
+
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                      <span className="bg-white/10 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[11px] font-bold text-sky-200">
+                        {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A
+                      </span>
+                      <span className="bg-white/10 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[11px] font-bold text-indigo-200 capitalize">
+                        {viewingStudent.boarding_status}
                       </span>
                     </div>
                   </div>
+
+                  <div className="border-t border-white/10 pt-4 grid grid-cols-2 gap-2 text-center text-[11px]">
+                    <div className="bg-white/5 p-2 rounded-xl">
+                      <span className="text-slate-400 block text-[10px]">Age</span>
+                      <span className="font-bold text-white">{calculateAge(viewingStudent.date_of_birth)}</span>
+                    </div>
+                    <div className="bg-white/5 p-2 rounded-xl">
+                      <span className="text-slate-400 block text-[10px]">Gender</span>
+                      <span className="font-bold text-white capitalize">{viewingStudent.gender}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Personal & Bio Details Card */}
+                <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-3xl space-y-3">
+                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                    <User className="w-4 h-4 text-sky-600" /> Bio Data & Health Info
+                  </h4>
+                  <div className="space-y-2 text-slate-700 font-medium">
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Date of Birth:</span>
+                      <strong className="text-slate-900">{viewingStudent.date_of_birth || '15th March 2010'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Religion:</span>
+                      <strong className="text-slate-900">{viewingStudent.religion || 'Christianity'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Nationality:</span>
+                      <strong className="text-slate-900">{viewingStudent.nationality || 'Tanzanian'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500">Blood Group:</span>
+                      <strong className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded font-black">{viewingStudent.blood_group || 'O+'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1">
+                      <span className="text-slate-500">Previous School:</span>
+                      <strong className="text-slate-900">{viewingStudent.previous_school || 'Mwenge Primary School'}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guardian Quick Call Box */}
+                <div className="bg-sky-50/70 border border-sky-200 p-5 rounded-3xl space-y-2">
+                  <span className="text-sky-800 font-bold text-xs uppercase tracking-wider block">Parent & Guardian Contact</span>
+                  <p className="text-base font-black text-slate-900">{viewingStudent.guardian_name || 'Juma Mkwawa'}</p>
+                  <p className="text-xs text-sky-800 font-bold flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-sky-600" />
+                    <span>{viewingStudent.guardian_phone || '+255 784 112 233'}</span>
+                  </p>
                 </div>
               </div>
-            )}
 
-            {/* Close Button */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+              {/* RIGHT COLUMN: COMPLETE ACADEMIC & HOSTEL DOSSIER */}
+              <div className="space-y-5">
+                
+                {/* Academic Leadership Grid (Class Teacher & Class Monitor) */}
+                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-3 shadow-xs">
+                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <UserCog className="w-4 h-4 text-indigo-600" /> Academic & Class Governance
+                  </h4>
+                  
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {/* Class Teacher */}
+                    <div className="bg-sky-50/60 border border-sky-100 p-3.5 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wider block">Mwalimu wa Darasa (Class Teacher)</span>
+                      <p className="font-black text-slate-900 text-sm">{viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</p>
+                      <p className="text-[11px] text-slate-500 font-medium">Class supervisor & academic mentor for {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'}.</p>
+                    </div>
+
+                    {/* Class Monitor */}
+                    <div className="bg-indigo-50/60 border border-indigo-100 p-3.5 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Monita wa Darasa (Class Prefect)</span>
+                      <p className="font-black text-slate-900 text-sm">{viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</p>
+                      <p className="text-[11px] text-slate-500 font-medium">Student prefect in charge of daily logbook and class order.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Residency & Hostel Governance Grid */}
+                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-3 shadow-xs">
+                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <Home className="w-4 h-4 text-purple-600" /> Boarding & Hostel Accommodation
+                  </h4>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {/* Hostel Name */}
+                    <div className="bg-purple-50/60 border border-purple-100 p-3.5 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">Bweni la Mwanafunzi (Hostel)</span>
+                      <p className="font-black text-slate-900 text-sm">
+                        {viewingStudent.boarding_status === 'boarding'
+                          ? (viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)')
+                          : 'Day Scholar (No Hostel Allocated)'}
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">Assigned residential room for prep & sleeping.</p>
+                    </div>
+
+                    {/* Hostel Master */}
+                    <div className="bg-pink-50/60 border border-pink-100 p-3.5 rounded-2xl space-y-1">
+                      <span className="text-[10px] font-bold text-pink-700 uppercase tracking-wider block">Mwalimu Msimamizi wa Bweni</span>
+                      <p className="font-black text-slate-900 text-sm">
+                        {viewingStudent.boarding_status === 'boarding'
+                          ? (viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro')
+                          : 'N/A'}
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">Patron/Matron in charge of dorm welfare & prep.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Examination Results & Performance Table */}
+                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-3 shadow-xs">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                      <Award className="w-4 h-4 text-emerald-600" /> Exam Results & Grades
+                    </h4>
+                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold">
+                      Class Rank: #3 / 45 (Avg: 82.8%)
+                    </span>
+                  </div>
+
+                  <div className="border border-slate-100 rounded-2xl overflow-hidden">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 text-slate-500 font-bold text-[10px] uppercase border-b border-slate-100">
+                          <th className="p-2.5 px-3">Subject</th>
+                          <th className="p-2.5 px-3">Score</th>
+                          <th className="p-2.5 px-3">Grade</th>
+                          <th className="p-2.5 px-3">Remarks</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
+                        {MOCK_MARKS.map((m) => (
+                          <tr key={m.id}>
+                            <td className="p-2.5 px-3 font-bold text-slate-900">{m.subject_name}</td>
+                            <td className="p-2.5 px-3 font-mono font-bold text-slate-800">{m.score}%</td>
+                            <td className="p-2.5 px-3">
+                              <span className="px-2 py-0.5 rounded font-black text-[10px] bg-emerald-100 text-emerald-800">
+                                Grade {m.grade}
+                              </span>
+                            </td>
+                            <td className="p-2.5 px-3 text-slate-500">{m.remarks}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Bottom Footer Close Button */}
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
               <button
                 onClick={() => setViewingStudent(null)}
-                className="bg-slate-900 hover:bg-black text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-md transition-all"
+                className="bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-2xl text-xs shadow-md transition-all"
               >
-                Close Dossier
+                Close Student File
               </button>
             </div>
           </div>
