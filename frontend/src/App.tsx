@@ -10,6 +10,10 @@ import { ParentPortal } from './pages/ParentPortal';
 import { StudentPortal } from './pages/StudentPortal';
 import { StudentDirectory } from './components/StudentDirectory';
 import { StaffDirectory } from './components/StaffDirectory';
+import { AttendanceManagement } from './components/AttendanceManagement';
+import { ExamsManagement } from './components/ExamsManagement';
+import { FinanceManagement } from './components/FinanceManagement';
+import { AnnouncementsManagement } from './components/AnnouncementsManagement';
 
 const MainLayout: React.FC = () => {
   const { user, role, isRestoring } = useAuth();
@@ -29,6 +33,18 @@ const MainLayout: React.FC = () => {
     }
     if (activeTab === 'staff') {
       return <StaffDirectory />;
+    }
+    if (activeTab === 'attendance') {
+      return <AttendanceManagement />;
+    }
+    if (activeTab === 'exams' || activeTab === 'marks' || activeTab === 'results') {
+      return <ExamsManagement />;
+    }
+    if (activeTab === 'finance' || activeTab === 'invoices' || activeTab === 'payments' || activeTab === 'debtors' || activeTab === 'fees') {
+      return <FinanceManagement />;
+    }
+    if (activeTab === 'announcements') {
+      return <AnnouncementsManagement />;
     }
 
     switch (role) {
