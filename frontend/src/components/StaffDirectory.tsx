@@ -191,14 +191,12 @@ export const StaffDirectory: React.FC = () => {
             >
               <Printer className="w-4 h-4" /> Print Official File
             </button>
-            {(role === 'school_admin' || role === 'headmaster') && (
-              <button
-                onClick={() => setEditingStaff(viewingStaff)}
-                className="px-4 py-2.5 bg-sky-700 text-white hover:bg-sky-800 rounded-xl font-extrabold text-xs transition-all flex items-center gap-2 shadow-xs"
-              >
-                <Pencil className="w-4 h-4" /> Edit Profile
-              </button>
-            )}
+            <button
+              onClick={() => setEditingStaff(viewingStaff)}
+              className="px-4 py-2.5 bg-sky-700 text-white hover:bg-sky-800 rounded-xl font-extrabold text-xs transition-all flex items-center gap-2 shadow-xs"
+            >
+              <Pencil className="w-4 h-4" /> Edit Profile
+            </button>
           </div>
         </div>
 
@@ -515,14 +513,12 @@ export const StaffDirectory: React.FC = () => {
           </p>
         </div>
 
-        {(role === 'school_admin' || role === 'headmaster') && (
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-sky-700 to-blue-700 hover:from-sky-800 hover:to-blue-800 text-white font-extrabold px-5 py-3 rounded-2xl text-xs transition-all shadow-md shadow-sky-700/20 shrink-0"
-          >
-            <Plus className="w-4 h-4" /> Register New Staff Member
-          </button>
-        )}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-sky-700 to-blue-700 hover:from-sky-800 hover:to-blue-800 text-white font-extrabold px-5 py-3 rounded-2xl text-xs transition-all shadow-md shadow-sky-700/20 shrink-0"
+        >
+          <Plus className="w-4 h-4" /> Register New Staff Member
+        </button>
       </div>
 
       {/* KPI Cards Bar */}
@@ -696,15 +692,13 @@ export const StaffDirectory: React.FC = () => {
                           >
                             <Eye className="w-3.5 h-3.5" /> View Staff Dossier
                           </button>
-                          {(role === 'school_admin' || role === 'headmaster') && (
-                            <button
-                              onClick={() => setEditingStaff(staff)}
-                              className="p-1.5 text-slate-600 hover:text-sky-700 hover:bg-sky-50 rounded-lg transition-all"
-                              title="Edit Staff Member"
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </button>
-                          )}
+                          <button
+                            onClick={() => setEditingStaff(staff)}
+                            className="p-1.5 text-slate-600 hover:text-sky-700 hover:bg-sky-50 rounded-lg transition-all"
+                            title="Edit Staff Member"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -869,6 +863,193 @@ export const StaffDirectory: React.FC = () => {
                   className="px-5 py-2.5 bg-slate-900 text-white rounded-xl font-extrabold shadow-md"
                 >
                   Confirm & Register Staff Member
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Edit Staff Member Profile */}
+      {editingStaff && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="font-black text-slate-900 text-lg uppercase tracking-wider flex items-center gap-2">
+                  <Pencil className="w-5 h-5 text-sky-700" /> Edit Staff Profile & Dossier
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Badili Taarifa za Mwalimu au Mtumishi (ID: {editingStaff.employee_id})
+                </p>
+              </div>
+              <button onClick={() => setEditingStaff(null)} className="p-2 text-slate-400 hover:text-slate-700 rounded-full">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4 text-xs font-medium">
+              <div className="grid sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">First Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingStaff.first_name}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, first_name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Middle Name</label>
+                  <input
+                    type="text"
+                    value={editingStaff.middle_name || ''}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, middle_name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Last Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingStaff.last_name}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, last_name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Employee ID *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingStaff.employee_id}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, employee_id: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold font-mono text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">TSC License No</label>
+                  <input
+                    type="text"
+                    value={editingStaff.tsc_number || ''}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, tsc_number: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold font-mono text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Department *</label>
+                  <select
+                    value={editingStaff.department}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, department: e.target.value as any })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  >
+                    <option value="Teaching">Teaching</option>
+                    <option value="Administration">Administration</option>
+                    <option value="Finance & Accounts">Finance & Accounts</option>
+                    <option value="Hostel & Boarding">Hostel & Boarding</option>
+                    <option value="Medical & Health">Medical & Health</option>
+                    <option value="Library & IT">Library & IT</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Designation / Role Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingStaff.designation}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, designation: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Teaching Subjects / Specialization</label>
+                  <input
+                    type="text"
+                    value={editingStaff.subjects || ''}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, subjects: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Phone Number *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingStaff.phone}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, phone: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={editingStaff.email}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, email: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Employment Status *</label>
+                  <select
+                    value={editingStaff.status}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, status: e.target.value as any })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold text-slate-900"
+                  >
+                    <option value="active">Active Duty</option>
+                    <option value="on_leave">On Annual Leave</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="retired">Retired</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">Salary Scale / Grade</label>
+                  <input
+                    type="text"
+                    value={editingStaff.salary_scale || ''}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, salary_scale: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold font-mono text-slate-900"
+                    placeholder="e.g. TGTS E"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-extrabold mb-1">National ID (NIDA No)</label>
+                  <input
+                    type="text"
+                    value={editingStaff.nida_number || ''}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, nida_number: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl font-bold font-mono text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-200 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingStaff(null)}
+                  className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-sky-700 text-white rounded-xl font-extrabold shadow-md"
+                >
+                  Save Profile Changes
                 </button>
               </div>
             </form>
