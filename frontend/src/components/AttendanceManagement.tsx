@@ -101,7 +101,7 @@ export const AttendanceManagement: React.FC = () => {
             <CalendarCheck className="w-7 h-7 text-sky-700" /> School Attendance Inspection & Compliance Audit Log
           </h1>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Daftari la Ukaguzi na Utathmini wa Mahudhurio ya Shule (Headmaster & Administrative Overview)
+            School Attendance Inspection & Compliance Dashboard (Headmaster & Administrative Overview)
           </p>
         </div>
 
@@ -211,10 +211,10 @@ export const AttendanceManagement: React.FC = () => {
               <FileSpreadsheet className="w-5 h-5 text-slate-900" /> Class Teacher Attendance Register Submissions Log
             </h3>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Orodha ya Uwasilishaji wa Mahudhurio na Walimu wa Madarasa
+              Class Teacher Register Submission Log
             </p>
           </div>
-          <span className="bg-slate-900 text-white font-mono font-bold px-3 py-1.5 rounded-xl text-xs self-start md:self-auto">
+          <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs self-start md:self-auto">
             DATE: {selectedDate}
           </span>
         </div>
@@ -300,7 +300,7 @@ export const AttendanceManagement: React.FC = () => {
               <AlertCircle className="w-5 h-5 text-rose-600" /> Daily Absentees & Medical Permission Inspection Log
             </h3>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Ukaguzi wa Wanafunzi Wasiohudhuria na Tuma SMS kwa Wazazi
+              Daily Absentees Inspection & Guardian SMS Notification
             </p>
           </div>
           <span className="bg-rose-100 text-rose-950 border border-rose-300 font-bold px-3 py-1 rounded-lg text-xs font-mono">

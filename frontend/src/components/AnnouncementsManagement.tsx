@@ -51,7 +51,7 @@ export const AnnouncementsManagement: React.FC = () => {
             <Bell className="w-7 h-7 text-sky-700" /> School Announcements & Official Circulars
           </h1>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Usimamizi wa Matangazo ya Shule na Taarifa kwa Wazazi na Wanafunzi (Haula Secondary)
+            Broadcast Official Bulletins, Parent Notifications & Student Circulars
           </p>
         </div>
 
@@ -107,7 +107,7 @@ export const AnnouncementsManagement: React.FC = () => {
                 <h3 className="font-black text-slate-900 text-base uppercase tracking-wider flex items-center gap-2">
                   <Plus className="w-5 h-5 text-sky-700" /> Publish School Announcement
                 </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">Toa Tangazo Mpya kwa Wazazi na Wanafunzi</p>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Broadcast new announcement to parents and students</p>
               </div>
               <button onClick={() => setShowModal(false)} className="p-2 text-slate-400 hover:text-slate-700 rounded-full">
                 <X className="w-5 h-5" />

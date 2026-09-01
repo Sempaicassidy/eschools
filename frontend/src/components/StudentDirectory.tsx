@@ -900,7 +900,7 @@ export const StudentDirectory: React.FC = () => {
                   <Award className="w-5 h-5 text-slate-900" /> Official Student Academic Lifecycle & Promotion Ledger
                 </h3>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Daftari Rasmi la Maendeleo ya Masomo na Kumbukumbu za Usajili (2024 - 2026)
+                  Official Student Academic Performance & Progression Record (2024 - 2026)
                 </p>
               </div>
               <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -1002,7 +1002,7 @@ export const StudentDirectory: React.FC = () => {
                   <Home className="w-5 h-5 text-slate-900" /> Official Attendance, Boarding & Disciplinary Register
                 </h3>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Daftari Rasmi la Mahudhurio, Usimamizi wa Bweni na Nidhamu ya Mwanafunzi
+                  Official Attendance Rate, Boarding Placement & Student Conduct Log
                 </p>
               </div>
               <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -1013,7 +1013,7 @@ export const StudentDirectory: React.FC = () => {
             {/* 1. Official Attendance Register Table */}
             <div className="space-y-3">
               <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> 1. Academic Session Attendance Register (Daftari la Mahudhurio)
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> 1. Academic Session Attendance Register
               </h4>
               <div className="border border-slate-900 rounded-xl overflow-hidden">
                 <table className="w-full text-left border-collapse text-xs">
@@ -1063,7 +1063,7 @@ export const StudentDirectory: React.FC = () => {
             {/* 2. Official Boarding & Hostel Placement Ledger Table */}
             <div className="space-y-3">
               <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
-                <Building className="w-4 h-4 text-purple-600" /> 2. Boarding & Hostel Allocation Ledger (Kumbukumbu za Bweni)
+                <Building className="w-4 h-4 text-purple-600" /> 2. Boarding & Hostel Allocation Ledger
               </h4>
               <div className="border border-slate-900 rounded-xl overflow-hidden">
                 <table className="w-full text-left border-collapse text-xs">
@@ -1098,7 +1098,7 @@ export const StudentDirectory: React.FC = () => {
             {/* 3. Official Disciplinary Conduct & Behavior Inspection Table */}
             <div className="space-y-3">
               <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-sky-600" /> 3. Disciplinary Conduct & Behavior Register (Daftari la Nidhamu)
+                <ShieldCheck className="w-4 h-4 text-sky-600" /> 3. Disciplinary Conduct & Behavior Register
               </h4>
               <div className="border border-slate-900 rounded-xl overflow-hidden">
                 <table className="w-full text-left border-collapse text-xs">
@@ -1151,7 +1151,7 @@ export const StudentDirectory: React.FC = () => {
                   <CreditCard className="w-5 h-5 text-slate-900" /> Official Student Financial Statement & Fee Balance Ledger
                 </h3>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Daftari Rasmi la Hesabu na Malipo ya Ada - Haula International Secondary School
+                  Official Accounting & Fee Payment Statement - Haula International Secondary School
                 </p>
               </div>
               <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -1189,7 +1189,7 @@ export const StudentDirectory: React.FC = () => {
             {/* Official Receipts & Payment Transactions Table */}
             <div className="space-y-3">
               <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
-                <FileText className="w-4 h-4 text-slate-900" /> Payment Receipts & Bank Deposit Ledger (Daftari la Risiti)
+                <FileText className="w-4 h-4 text-slate-900" /> Payment Receipts & Bank Deposit Ledger
               </h4>
               <div className="border border-slate-900 rounded-xl overflow-hidden">
                 <table className="w-full text-left border-collapse text-xs">

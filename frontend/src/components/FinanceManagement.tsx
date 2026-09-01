@@ -49,7 +49,7 @@ export const FinanceManagement: React.FC = () => {
             <CreditCard className="w-7 h-7 text-amber-600" /> School Fees, Financial Invoices & Payment Ledger
           </h1>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Usimamizi wa Ada, Risiti za Malipo na Invois za Wanafunzi (Bursar Accounting System)
+            School Fees Management, Payment Receipts & Student Invoices (Bursar Accounting System)
           </p>
         </div>
 

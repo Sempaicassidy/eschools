@@ -273,7 +273,7 @@ export const StaffDirectory: React.FC = () => {
                     <Briefcase className="w-5 h-5 text-slate-900" /> Official Teaching & Employment Dossier
                   </h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    Daftari Rasmi la Ajira, Masomo na Ufundishaji wa Mwalimu
+                    Official Employee Service, Teaching & Assignment Record
                   </p>
                 </div>
                 <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -344,7 +344,7 @@ export const StaffDirectory: React.FC = () => {
                     <ShieldCheck className="w-5 h-5 text-slate-900" /> Class & Hostel Supervision Responsibilities
                   </h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    Daftari la Majukumu ya Ualimu wa Darasa, Usimamizi wa Bweni na Doria ya Shule
+                    Official Class Supervision, Hostel Management & Duty Schedule Record
                   </p>
                 </div>
                 <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -366,7 +366,7 @@ export const StaffDirectory: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
                     <tr className="hover:bg-slate-50">
-                      <td className="p-3 border-r border-slate-200 font-extrabold">Form Class Teacher (Mwalimu wa Darasa)</td>
+                      <td className="p-3 border-r border-slate-200 font-extrabold">Form Class Teacher</td>
                       <td className="p-3 border-r border-slate-200 font-bold">{viewingStaff.assigned_class || 'Form III Science Stream'}</td>
                       <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">45 Scholars</td>
                       <td className="p-3 border-r border-slate-200 text-slate-700">Class Monitor: Josephat K. Mwita</td>
@@ -394,7 +394,7 @@ export const StaffDirectory: React.FC = () => {
                     <CreditCard className="w-5 h-5 text-slate-900" /> Attendance, Leave Record & Payroll Ledger
                   </h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    Daftari Rasmi la Mahudhurio ya Kazi, Likizo na Mshahara wa Mtumishi
+                    Official Employee Duty Attendance, Annual Leave & Payroll Ledger
                   </p>
                 </div>
                 <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -447,7 +447,7 @@ export const StaffDirectory: React.FC = () => {
                     <User className="w-5 h-5 text-slate-900" /> Bio Data & Professional Qualifications
                   </h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    Taarifa Binafsi, Vitambulisho vya NIDA na Vyeti vya Mwalimu
+                    Personal Bio Data, NIDA Identification & Credentials
                   </p>
                 </div>
                 <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
@@ -464,7 +464,7 @@ export const StaffDirectory: React.FC = () => {
                       <span className="font-extrabold text-slate-900">{staffFullName}</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1.5">
-                      <span className="text-slate-500">Gender (Jinsia):</span>
+                      <span className="text-slate-500">Gender:</span>
                       <span className="font-extrabold text-slate-900 capitalize">{viewingStaff.gender}</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1.5">
@@ -509,7 +509,7 @@ export const StaffDirectory: React.FC = () => {
             <Users className="w-7 h-7 text-sky-700" /> Teachers & Staff Administrative Directory
           </h1>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Daftari la Walimu na Watumishi wa Shule (Haula Secondary Campus)
+            Academic & Support Personnel Directory (Haula Secondary Campus)
           </p>
         </div>
 
@@ -534,7 +534,7 @@ export const StaffDirectory: React.FC = () => {
 
         <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-extrabold uppercase tracking-wider">Teaching Staff (Walimu)</span>
+            <span className="text-xs font-extrabold uppercase tracking-wider">Teaching Staff</span>
             <BookOpen className="w-5 h-5 text-indigo-600" />
           </div>
           <p className="text-3xl font-black text-indigo-950">{staffKpis.teaching}</p>
@@ -720,7 +720,7 @@ export const StaffDirectory: React.FC = () => {
                   <Plus className="w-5 h-5 text-sky-700" /> Register New Staff Member
                 </h3>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Sajili Mwalimu au Mtumishi Mpya wa Shule
+                  Enroll new academic teacher or support staff member
                 </p>
               </div>
               <button onClick={() => setShowAddModal(false)} className="p-2 text-slate-400 hover:text-slate-700 rounded-full">
@@ -880,7 +880,7 @@ export const StaffDirectory: React.FC = () => {
                   <Pencil className="w-5 h-5 text-sky-700" /> Edit Staff Profile & Dossier
                 </h3>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Badili Taarifa za Mwalimu au Mtumishi (ID: {editingStaff.employee_id})
+                  Update employee profile record (ID: {editingStaff.employee_id})
                 </p>
               </div>
               <button onClick={() => setEditingStaff(null)} className="p-2 text-slate-400 hover:text-slate-700 rounded-full">
