@@ -992,30 +992,149 @@ export const StudentDirectory: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 3: ATTENDANCE, HOSTEL & DISCIPLINE */}
+        {/* TAB 3: OFFICIAL ATTENDANCE, BOARDING & DISCIPLINARY REGISTER */}
         {dossierTab === 'attendance' && (
           <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs text-xs">
-            <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-              <Home className="w-4 h-4 text-purple-600" /> Attendance Rate, Boarding & Conduct Log
-            </h3>
-
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl space-y-2">
-                <span className="text-emerald-800 font-bold uppercase text-[10px]">Attendance Performance</span>
-                <p className="text-2xl font-black text-emerald-950">98.3% Attendance Rate</p>
-                <p className="text-[11px] text-emerald-700 font-medium">Attended 118 out of 120 school sessions. 2 excused sick days.</p>
+            <div className="border-b-2 border-slate-900 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-black text-slate-900 text-base uppercase tracking-wider flex items-center gap-2">
+                  <Home className="w-5 h-5 text-slate-900" /> Official Attendance, Boarding & Disciplinary Register
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Daftari Rasmi la Mahudhurio, Usimamizi wa Bweni na Nidhamu ya Mwanafunzi
+                </p>
               </div>
+              <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
+                REGISTER REF: REG/ATT-{viewingStudent.admission_number}
+              </span>
+            </div>
 
-              <div className="bg-purple-50 border border-purple-200 p-5 rounded-2xl space-y-2">
-                <span className="text-purple-800 font-bold uppercase text-[10px]">Hostel Allocation</span>
-                <p className="text-lg font-black text-slate-900">{viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)'}</p>
-                <p className="text-[11px] text-purple-800 font-medium">Hostel Master: {viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro'}</p>
+            {/* 1. Official Attendance Register Table */}
+            <div className="space-y-3">
+              <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> 1. Academic Session Attendance Register (Daftari la Mahudhurio)
+              </h4>
+              <div className="border border-slate-900 rounded-xl overflow-hidden">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
+                      <th className="p-3 border-r border-slate-800">Academic Term</th>
+                      <th className="p-3 text-center border-r border-slate-800">Sessions Conducted</th>
+                      <th className="p-3 text-center border-r border-slate-800">Days Present</th>
+                      <th className="p-3 text-center border-r border-slate-800">Excused Absences</th>
+                      <th className="p-3 text-center border-r border-slate-800">Unexcused Absences</th>
+                      <th className="p-3 text-center border-r border-slate-800">Attendance Rate</th>
+                      <th className="p-3">Official Endorsement</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-bold">2026 - Term II Evaluation</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">120 Days</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold text-emerald-800">118 Days</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold text-amber-700">2 Days (Sick Leave)</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold text-emerald-700">0 Days</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black text-emerald-900">
+                        <span className="bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded border border-emerald-300 font-mono">
+                          98.3%
+                        </span>
+                      </td>
+                      <td className="p-3 text-slate-600 text-[11px]">Approved by Tr. Alex Mhagama</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-bold">2026 - Term I Evaluation</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">115 Days</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold text-emerald-800">114 Days</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold text-amber-700">1 Day (Family Permission)</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold text-emerald-700">0 Days</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black text-emerald-900">
+                        <span className="bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded border border-emerald-300 font-mono">
+                          99.1%
+                        </span>
+                      </td>
+                      <td className="p-3 text-slate-600 text-[11px]">Approved by Tr. Alex Mhagama</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+            </div>
 
-              <div className="bg-sky-50 border border-sky-200 p-5 rounded-2xl space-y-2">
-                <span className="text-sky-800 font-bold uppercase text-[10px]">Disciplinary Rating</span>
-                <p className="text-lg font-black text-slate-900">Conduct: A (Very Good)</p>
-                <p className="text-[11px] text-sky-800 font-medium">Zero disciplinary warnings recorded on student file.</p>
+            {/* 2. Official Boarding & Hostel Placement Ledger Table */}
+            <div className="space-y-3">
+              <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
+                <Building className="w-4 h-4 text-purple-600" /> 2. Boarding & Hostel Allocation Ledger (Kumbukumbu za Bweni)
+              </h4>
+              <div className="border border-slate-900 rounded-xl overflow-hidden">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
+                      <th className="p-3 border-r border-slate-800">Hostel Block & Dormitory</th>
+                      <th className="p-3 border-r border-slate-800">Hostel Master / Patron</th>
+                      <th className="p-3 text-center border-r border-slate-800">Evening Prep Attendance</th>
+                      <th className="p-3 text-center border-r border-slate-800">Dorm Inspection Rating</th>
+                      <th className="p-3 text-center border-r border-slate-800">Roll-Call Status</th>
+                      <th className="p-3">Hostel Clearance Ref</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-extrabold">{viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)'} - Room 12</td>
+                      <td className="p-3 border-r border-slate-200">{viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro'}</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-black text-emerald-800">100% Attendance</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-bold text-emerald-900">Grade A (Very Neat)</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black">
+                        <span className="bg-purple-100 text-purple-950 px-2 py-0.5 rounded border border-purple-300">
+                          FULLY CLEARED
+                        </span>
+                      </td>
+                      <td className="p-3 font-mono text-[11px] text-slate-600">HOSTEL/KIL-B/RM12</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 3. Official Disciplinary Conduct & Behavior Inspection Table */}
+            <div className="space-y-3">
+              <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-sky-600" /> 3. Disciplinary Conduct & Behavior Register (Daftari la Nidhamu)
+              </h4>
+              <div className="border border-slate-900 rounded-xl overflow-hidden">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
+                      <th className="p-3 border-r border-slate-800">Inspection Category</th>
+                      <th className="p-3 text-center border-r border-slate-800">Official Rating</th>
+                      <th className="p-3 text-center border-r border-slate-800">Warning Letters Issued</th>
+                      <th className="p-3 text-center border-r border-slate-800">Council Discipline Status</th>
+                      <th className="p-3">Disciplinary Master Endorsement</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-bold">General School & Classroom Discipline</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black text-emerald-800">Grade A (Very Good)</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">0 Warnings</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black">
+                        <span className="bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded border border-emerald-300">
+                          CLEAN RECORD
+                        </span>
+                      </td>
+                      <td className="p-3 text-slate-600 text-[11px]">Tr. Hassan K. Juma (Disciplinary Master)</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-bold">Uniform, Grooming & Punctuality</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black text-emerald-800">Grade A (Compliant)</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">0 Warnings</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black">
+                        <span className="bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded border border-emerald-300">
+                          CLEAN RECORD
+                        </span>
+                      </td>
+                      <td className="p-3 text-slate-600 text-[11px]">Tr. Hassan K. Juma (Disciplinary Master)</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
