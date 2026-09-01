@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { BookOpen, CalendarDays, Layers3, Pencil, Trash2, Plus, Check, X, Sparkles } from 'lucide-react';
+import { BookOpen, CalendarDays, Layers3, Pencil, Trash2, Plus, Check, X, GraduationCap } from 'lucide-react';
 
 type AcademicYear = {
   id: number;
@@ -115,7 +115,7 @@ export const AcademicSetup: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-sky-600" />
+            <GraduationCap className="w-5 h-5 text-sky-600" />
             <h2 className="text-xl font-black text-slate-900">Academic Structure & Setup</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">Configure and edit academic years, terms, classes, streams, and subjects.</p>

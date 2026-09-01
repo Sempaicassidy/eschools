@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Search, Bell, ShieldCheck, Sparkles } from 'lucide-react';
+import { Search, Bell, ShieldCheck, GraduationCap } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { user, role } = useAuth();
@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
       {/* Header Badges & Actions */}
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-2 bg-sky-50 text-sky-700 border border-sky-200 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs">
-          <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+          <GraduationCap className="w-3.5 h-3.5 text-sky-600" />
           <span>E-Schools Standalone v1.0</span>
         </div>
 
