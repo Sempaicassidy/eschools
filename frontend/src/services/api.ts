@@ -1,0 +1,164 @@
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost/e-schools/backend/public/api';
+
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('haula_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Mock Initial Datasets for seamless client-side experience
+export const MOCK_SCHOOLS = [
+  {
+    id: 1,
+    name: 'Haula International Secondary School',
+    registration_number: 'S.4820/001',
+    school_type: 'mixed',
+    ownership: 'private',
+    region: 'Dar es Salaam',
+    district: 'Kinondoni',
+    phone: '+255 754 123 456',
+    email: 'info@haulaschools.ac.tz',
+    is_active: true,
+    students_count: 850,
+    staff_count: 42,
+  },
+  {
+    id: 2,
+    name: 'Feza Boys Secondary School',
+    registration_number: 'S.1204/082',
+    school_type: 'boarding',
+    ownership: 'private',
+    region: 'Dar es Salaam',
+    district: 'Kawe',
+    phone: '+255 712 987 654',
+    email: 'info@fezaschools.org',
+    is_active: true,
+    students_count: 620,
+    staff_count: 38,
+  },
+  {
+    id: 3,
+    name: 'Kilakala Girls High School',
+    registration_number: 'S.0110/004',
+    school_type: 'boarding',
+    ownership: 'public',
+    region: 'Morogoro',
+    district: 'Morogoro Urban',
+    phone: '+255 23 260 4050',
+    email: 'headmistress@kilakala.ac.tz',
+    is_active: true,
+    students_count: 940,
+    staff_count: 50,
+  },
+];
+
+export const MOCK_STUDENTS = [
+  {
+    id: 1,
+    school_id: 1,
+    admission_number: 'STD-2026-001',
+    first_name: 'Baraka',
+    middle_name: 'Juma',
+    last_name: 'Mkwawa',
+    gender: 'male',
+    class_name: 'Form II',
+    stream_name: 'A',
+    boarding_status: 'boarding',
+    status: 'active',
+    guardian_name: 'Juma Mkwawa',
+    guardian_phone: '+255 784 112 233',
+    fee_balance: 150000,
+  },
+  {
+    id: 2,
+    school_id: 1,
+    admission_number: 'STD-2026-002',
+    first_name: 'Aisha',
+    middle_name: 'Hassan',
+    last_name: 'Rashid',
+    gender: 'female',
+    class_name: 'Form II',
+    stream_name: 'A',
+    boarding_status: 'day',
+    status: 'active',
+    guardian_name: 'Hassan Rashid',
+    guardian_phone: '+255 754 998 877',
+    fee_balance: 0,
+  },
+  {
+    id: 3,
+    school_id: 1,
+    admission_number: 'STD-2026-003',
+    first_name: 'David',
+    middle_name: 'Emmanuel',
+    last_name: 'Nyerere',
+    gender: 'male',
+    class_name: 'Form IV',
+    stream_name: 'Science',
+    boarding_status: 'boarding',
+    status: 'active',
+    guardian_name: 'Emmanuel Nyerere',
+    guardian_phone: '+255 713 445 566',
+    fee_balance: 320000,
+  },
+  {
+    id: 4,
+    school_id: 1,
+    admission_number: 'STD-2026-004',
+    first_name: 'Neema',
+    middle_name: 'Grace',
+    last_name: 'Massawe',
+    gender: 'female',
+    class_name: 'Form IV',
+    stream_name: 'Arts',
+    boarding_status: 'day',
+    status: 'active',
+    guardian_name: 'Grace Massawe',
+    guardian_phone: '+255 767 332 211',
+    fee_balance: 50000,
+  },
+];
+
+export const MOCK_ATTENDANCE = [
+  { id: 1, student_id: 1, student_name: 'Baraka Juma Mkwawa', admission_number: 'STD-2026-001', status: 'present' },
+  { id: 2, student_id: 2, student_name: 'Aisha Hassan Rashid', admission_number: 'STD-2026-002', status: 'present' },
+  { id: 3, student_id: 3, student_name: 'David Emmanuel Nyerere', admission_number: 'STD-2026-003', status: 'absent', remarks: 'Sick - Reported to dispensary' },
+  { id: 4, student_id: 4, student_name: 'Neema Grace Massawe', admission_number: 'STD-2026-004', status: 'late', remarks: 'Arrived at 08:20 AM' },
+];
+
+export const MOCK_MARKS = [
+  { id: 1, student_id: 1, student_name: 'Baraka Juma Mkwawa', subject_name: 'Mathematics', score: 88, max_score: 100, grade: 'A', points: 1, remarks: 'Excellent performance' },
+  { id: 2, student_id: 1, student_name: 'Baraka Juma Mkwawa', subject_name: 'Physics', score: 79, max_score: 100, grade: 'A', points: 1, remarks: 'Very good' },
+  { id: 3, student_id: 1, student_name: 'Baraka Juma Mkwawa', subject_name: 'Chemistry', score: 72, max_score: 100, grade: 'B', points: 2, remarks: 'Good effort' },
+  { id: 4, student_id: 1, student_name: 'Baraka Juma Mkwawa', subject_name: 'English Language', score: 91, max_score: 100, grade: 'A', points: 1, remarks: 'Outstanding' },
+  { id: 5, student_id: 1, student_name: 'Baraka Juma Mkwawa', subject_name: 'Kiswahili', score: 84, max_score: 100, grade: 'A', points: 1, remarks: 'Very clear grasp' },
+];
+
+export const MOCK_INVOICES = [
+  { id: 1, invoice_number: 'INV-2026-001', student_name: 'Baraka Juma Mkwawa', class_name: 'Form II', total_amount: 850000, paid_amount: 700000, balance: 150000, due_date: '2026-09-15', status: 'partial' },
+  { id: 2, invoice_number: 'INV-2026-002', student_name: 'Aisha Hassan Rashid', class_name: 'Form II', total_amount: 600000, paid_amount: 600000, balance: 0, due_date: '2026-09-15', status: 'paid' },
+  { id: 3, invoice_number: 'INV-2026-003', student_name: 'David Emmanuel Nyerere', class_name: 'Form IV', total_amount: 950000, paid_amount: 630000, balance: 320000, due_date: '2026-08-30', status: 'overdue' },
+];
+
+export const MOCK_PAYMENTS = [
+  { id: 1, receipt_number: 'REC-88401', student_name: 'Baraka Juma Mkwawa', amount: 350000, payment_method: 'mobile_money', reference_number: 'MPESA-TX99281', payment_date: '2026-08-25' },
+  { id: 2, receipt_number: 'REC-88402', student_name: 'Aisha Hassan Rashid', amount: 600000, payment_method: 'bank', reference_number: 'CRDB-DEP-4401', payment_date: '2026-08-20' },
+  { id: 3, receipt_number: 'REC-88403', student_name: 'Baraka Juma Mkwawa', amount: 350000, payment_method: 'cash', reference_number: 'CASH-REF-002', payment_date: '2026-08-10' },
+];
+
+export const MOCK_ANNOUNCEMENTS = [
+  { id: 1, title: 'Term II Terminal Examinations Schedule', message: 'Terminal examinations for Form II & Form IV will commence on Monday, 15th September 2026. All fee balances must be cleared before exam permit cards are issued.', audience: 'All Parents & Students', created_at: '2026-08-26', author_name: 'Academic Master' },
+  { id: 2, title: 'Parents & Teachers Association (PTA) Meeting', message: 'Annual PTA meeting is scheduled for Saturday, 5th September 2026 starting at 09:00 AM in the Main Assembly Hall.', audience: 'Parents', created_at: '2026-08-22', author_name: 'Headmaster' },
+];
