@@ -104,11 +104,13 @@ export const StudentDirectory: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [notice, setNotice] = useState<string | null>(null);
 
-  // Filters
+  // Filters & Report Year Selector
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedBoarding, setSelectedBoarding] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedReportYear, setSelectedReportYear] = useState<'2026' | '2025' | '2024'>('2026');
+  const [selectedReportTerm, setSelectedReportTerm] = useState<'term2' | 'term1' | 'midterm'>('term2');
 
   // Modals & Full Page View State
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -438,13 +440,43 @@ export const StudentDirectory: React.FC = () => {
         {/* TAB 1: OFFICIAL NECTA PROGRESS REPORT & TRANSCRIPT */}
         {dossierTab === 'necta_report' && (
           <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs print:p-0 print:border-none">
+            {/* Academic Year & Class Filter Selector */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100/90 p-3.5 rounded-2xl border border-slate-200 text-xs font-medium print:hidden">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-sky-600" />
+                <span className="font-extrabold text-slate-900">Select Academic Year & Class History:</span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={selectedReportYear}
+                  onChange={(e) => setSelectedReportYear(e.target.value as any)}
+                  className="bg-white border border-slate-300 font-extrabold text-slate-900 px-3 py-1.5 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 shadow-xs"
+                >
+                  <option value="2026">2026 (Form III - Current Year)</option>
+                  <option value="2025">2025 (Form II - Previous Year & FTNA)</option>
+                  <option value="2024">2024 (Form I - Entry Year)</option>
+                </select>
+
+                <select
+                  value={selectedReportTerm}
+                  onChange={(e) => setSelectedReportTerm(e.target.value as any)}
+                  className="bg-white border border-slate-300 font-extrabold text-slate-900 px-3 py-1.5 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 shadow-xs"
+                >
+                  <option value="term2">Term II Final Evaluation</option>
+                  <option value="term1">Term I Terminal Evaluation</option>
+                  <option value="midterm">Mid-Term Assessment</option>
+                </select>
+              </div>
+            </div>
+
             {/* Letterhead */}
             <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
               <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">The United Republic of Tanzania</p>
               <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase">HAULA INTERNATIONAL SECONDARY SCHOOL</h2>
               <p className="text-xs font-bold text-slate-600">P.O. Box 4520, Dar es Salaam • Registration No: S.4820/001</p>
               <span className="inline-block mt-2 bg-slate-900 text-white font-black px-4 py-1 rounded-full text-xs uppercase tracking-wider">
-                Official Student Terminal Progress Report Card
+                Official Student Terminal Progress Report Card ({selectedReportYear})
               </span>
             </div>
 
@@ -459,12 +491,16 @@ export const StudentDirectory: React.FC = () => {
                 <span className="font-mono font-bold text-slate-900">{viewingStudent.admission_number}</span>
               </div>
               <div>
-                <span className="text-slate-400 font-semibold block text-[10px]">Class & Stream</span>
-                <span className="font-bold text-slate-900">{viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A</span>
+                <span className="text-slate-400 font-semibold block text-[10px]">Evaluated Class</span>
+                <span className="font-bold text-slate-900">
+                  {selectedReportYear === '2026' ? 'Form III - Science' : selectedReportYear === '2025' ? 'Form II - Stream A' : 'Form I - Stream A'}
+                </span>
               </div>
               <div>
                 <span className="text-slate-400 font-semibold block text-[10px]">Academic Term & Year</span>
-                <span className="font-bold text-slate-900">Term II - 2026 Evaluation</span>
+                <span className="font-bold text-slate-900">
+                  {selectedReportTerm === 'term2' ? 'Term II' : selectedReportTerm === 'term1' ? 'Term I' : 'Mid-Term'} - {selectedReportYear} Evaluation
+                </span>
               </div>
             </div>
 
@@ -484,7 +520,7 @@ export const StudentDirectory: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
-                  {[
+                  {(selectedReportYear === '2026' ? [
                     { code: '011', name: 'Civics', t1: 88, mid: 90, term: 92, score: 91, grade: 'A', pts: 1, remarks: 'Very clear constitutional understanding' },
                     { code: '012', name: 'History', t1: 84, mid: 87, term: 89, score: 87, grade: 'A', pts: 1, remarks: 'Strong essay structure & recall' },
                     { code: '013', name: 'Geography', t1: 78, mid: 80, term: 82, score: 81, grade: 'A', pts: 1, remarks: 'Good map work & contour analysis' },
@@ -495,7 +531,29 @@ export const StudentDirectory: React.FC = () => {
                     { code: '033', name: 'Biology', t1: 82, mid: 85, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Outstanding practical drawings' },
                     { code: '041', name: 'Basic Mathematics', t1: 85, mid: 88, term: 91, score: 89, grade: 'A', pts: 1, remarks: 'Top logical problem solver' },
                     { code: '061', name: 'Information & Computer Studies (ICS)', t1: 90, mid: 94, term: 96, score: 95, grade: 'A', pts: 1, remarks: 'Excellent computer programming logic' },
-                  ].map((sub) => (
+                  ] : selectedReportYear === '2025' ? [
+                    { code: '011', name: 'Civics', t1: 85, mid: 86, term: 88, score: 87, grade: 'A', pts: 1, remarks: 'Good civic responsibility' },
+                    { code: '012', name: 'History', t1: 80, mid: 82, term: 85, score: 83, grade: 'A', pts: 1, remarks: 'Good African history analysis' },
+                    { code: '013', name: 'Geography', t1: 75, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Good understanding of physical geography' },
+                    { code: '021', name: 'Kiswahili', t1: 78, mid: 80, term: 82, score: 80, grade: 'A', pts: 1, remarks: 'Ufahamu mzuri wa sarufi' },
+                    { code: '022', name: 'English Language', t1: 85, mid: 88, term: 90, score: 88, grade: 'A', pts: 1, remarks: 'Good grammar & essay writing' },
+                    { code: '031', name: 'Physics', t1: 72, mid: 75, term: 78, score: 76, grade: 'A', pts: 1, remarks: 'Solid understanding of physics principles' },
+                    { code: '032', name: 'Chemistry', t1: 68, mid: 70, term: 72, score: 70, grade: 'B', pts: 2, remarks: 'Fair effort in stoichiometry' },
+                    { code: '033', name: 'Biology', t1: 80, mid: 82, term: 85, score: 83, grade: 'A', pts: 1, remarks: 'Very good in botany & zoology' },
+                    { code: '041', name: 'Basic Mathematics', t1: 82, mid: 84, term: 86, score: 85, grade: 'A', pts: 1, remarks: 'Good in geometry & algebra' },
+                    { code: '061', name: 'Information & Computer Studies (ICS)', t1: 88, mid: 90, term: 92, score: 90, grade: 'A', pts: 1, remarks: 'Good computer fundamentals' },
+                  ] : [
+                    { code: '011', name: 'Civics', t1: 80, mid: 82, term: 84, score: 82, grade: 'A', pts: 1, remarks: 'Solid orientation in civics' },
+                    { code: '012', name: 'History', t1: 76, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Good effort in world history' },
+                    { code: '013', name: 'Geography', t1: 72, mid: 74, term: 76, score: 75, grade: 'A', pts: 1, remarks: 'Good map skills' },
+                    { code: '021', name: 'Kiswahili', t1: 75, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Kazi nzuri ya sarufi' },
+                    { code: '022', name: 'English Language', t1: 82, mid: 84, term: 86, score: 84, grade: 'A', pts: 1, remarks: 'Good reading comprehension' },
+                    { code: '031', name: 'Physics', t1: 70, mid: 72, term: 74, score: 72, grade: 'B', pts: 2, remarks: 'Fair calculation skills' },
+                    { code: '032', name: 'Chemistry', t1: 65, mid: 68, term: 70, score: 68, grade: 'B', pts: 2, remarks: 'Needs more practice in lab safety' },
+                    { code: '033', name: 'Biology', t1: 78, mid: 80, term: 82, score: 80, grade: 'A', pts: 1, remarks: 'Good plant biology' },
+                    { code: '041', name: 'Basic Mathematics', t1: 80, mid: 82, term: 84, score: 82, grade: 'A', pts: 1, remarks: 'Good arithmetic foundations' },
+                    { code: '061', name: 'Information & Computer Studies (ICS)', t1: 85, mid: 86, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Good keyboarding & office apps' },
+                  ]).map((sub) => (
                     <tr key={sub.code} className="hover:bg-slate-50">
                       <td className="p-3 border-r border-slate-200 font-extrabold">{sub.code} - {sub.name}</td>
                       <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.t1}%</td>
@@ -517,13 +575,19 @@ export const StudentDirectory: React.FC = () => {
             <div className="grid md:grid-cols-3 gap-4 border-2 border-slate-900 p-5 rounded-2xl bg-slate-50 text-xs">
               <div className="space-y-1 border-r md:border-slate-300 pr-4">
                 <span className="text-[10px] font-bold text-slate-500 uppercase block">Total Score & Average</span>
-                <p className="text-xl font-black text-slate-900">858 / 1000 Marks</p>
-                <p className="text-sm font-extrabold text-emerald-700">Average: 85.8% (Distinction)</p>
+                <p className="text-xl font-black text-slate-900">
+                  {selectedReportYear === '2026' ? '858 / 1000' : selectedReportYear === '2025' ? '827 / 1000' : '783 / 1000'} Marks
+                </p>
+                <p className="text-sm font-extrabold text-emerald-700">
+                  Average: {selectedReportYear === '2026' ? '85.8%' : selectedReportYear === '2025' ? '82.7%' : '78.3%'} (Distinction)
+                </p>
               </div>
 
               <div className="space-y-1 border-r md:border-slate-300 pr-4">
                 <span className="text-[10px] font-bold text-slate-500 uppercase block">Official NECTA Division</span>
-                <p className="text-xl font-black text-emerald-800">DIVISION I (7 Points)</p>
+                <p className="text-xl font-black text-emerald-800">
+                  {selectedReportYear === '2026' ? 'DIVISION I (7 Points)' : selectedReportYear === '2025' ? 'DIVISION I (8 Points - FTNA)' : 'DIVISION I (10 Points)'}
+                </p>
                 <p className="text-xs font-bold text-slate-700">Class Position: Rank #3 out of 45 Students</p>
               </div>
 
