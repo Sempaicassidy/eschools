@@ -942,38 +942,69 @@ export const StudentDirectory: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Examination Results & Performance Table */}
-                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-3 shadow-xs">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                      <Award className="w-4 h-4 text-emerald-600" /> Exam Results & Grades
-                    </h4>
-                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold">
-                      Class Rank: #3 / 45 (Avg: 82.8%)
-                    </span>
+                {/* Comprehensive Examination Results & Multi-Test Progress Matrix */}
+                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-4 shadow-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <div>
+                      <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                        <Award className="w-4 h-4 text-emerald-600" /> Student Comprehensive Academic Progress & All Test Results
+                      </h4>
+                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Track progress across Continuous Assessments (Monthly Tests), Mid-Term, and Terminal Exams for all subjects.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">
+                        Division I (7 Points)
+                      </span>
+                      <span className="bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full text-xs font-black">
+                        Rank: #3 / 45 (Avg: 85.9%)
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="border border-slate-100 rounded-2xl overflow-hidden">
-                    <table className="w-full text-left border-collapse">
+                  {/* All Subjects & Multi-Test Performance Matrix Table */}
+                  <div className="border border-slate-200/80 rounded-2xl overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-50 text-slate-500 font-bold text-[10px] uppercase border-b border-slate-100">
-                          <th className="p-2.5 px-3">Subject</th>
-                          <th className="p-2.5 px-3">Score</th>
-                          <th className="p-2.5 px-3">Grade</th>
-                          <th className="p-2.5 px-3">Remarks</th>
+                        <tr className="bg-slate-50/90 text-slate-600 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-200">
+                          <th className="p-3">Subject Name</th>
+                          <th className="p-3 text-center">Test 1 (20%)</th>
+                          <th className="p-3 text-center">Mid-Term (20%)</th>
+                          <th className="p-3 text-center">Terminal (60%)</th>
+                          <th className="p-3 text-center">Term Avg & Grade</th>
+                          <th className="p-3 text-center">Trend</th>
+                          <th className="p-3">Teacher Remarks</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 font-medium text-[11px] text-slate-800">
-                        {MOCK_MARKS.map((m) => (
-                          <tr key={m.id}>
-                            <td className="p-2.5 px-3 font-bold text-slate-900">{m.subject_name}</td>
-                            <td className="p-2.5 px-3 font-mono font-bold text-slate-800">{m.score}%</td>
-                            <td className="p-2.5 px-3">
-                              <span className="px-2 py-0.5 rounded font-black text-[10px] bg-emerald-100 text-emerald-800">
-                                Grade {m.grade}
+                      <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                        {[
+                          { id: 1, subject: 'Basic Mathematics', t1: 85, mid: 88, term: 91, avg: 88.9, grade: 'A', trend: '+3.2%', remarks: 'Outstanding logical reasoning & algebra' },
+                          { id: 2, subject: 'Physics', t1: 76, mid: 81, term: 80, avg: 79.4, grade: 'A', trend: '+4.0%', remarks: 'Strong in mechanics & optics calculations' },
+                          { id: 3, subject: 'Chemistry', t1: 70, mid: 72, term: 75, avg: 73.4, grade: 'B', trend: '+2.5%', remarks: 'Good effort in organic chemistry balance' },
+                          { id: 4, subject: 'Biology', t1: 82, mid: 85, term: 88, avg: 86.2, grade: 'A', trend: '+3.0%', remarks: 'Excellent cell structure drawings & practicals' },
+                          { id: 5, subject: 'English Language', t1: 89, mid: 92, term: 93, avg: 92.0, grade: 'A', trend: '+1.5%', remarks: 'High fluency, vocabulary & comprehension' },
+                          { id: 6, subject: 'Kiswahili', t1: 80, mid: 83, term: 86, avg: 84.2, grade: 'A', trend: '+3.0%', remarks: 'Ushahidi wa kipekee katika uchanganuzi wa fasihi' },
+                          { id: 7, subject: 'Geography', t1: 78, mid: 80, term: 82, avg: 80.8, grade: 'A', trend: '+2.0%', remarks: 'Good map work, contours & climate analysis' },
+                          { id: 8, subject: 'History', t1: 84, mid: 87, term: 89, avg: 87.6, grade: 'A', trend: '+2.3%', remarks: 'Strong historical recall & essay structure' },
+                          { id: 9, subject: 'Civics', t1: 88, mid: 90, term: 92, avg: 90.8, grade: 'A', trend: '+2.0%', remarks: 'Deep understanding of constitutional rights' },
+                          { id: 10, subject: 'Computer Studies (ICS)', t1: 90, mid: 94, term: 96, avg: 94.4, grade: 'A', trend: '+2.6%', remarks: 'Top programmer & computer logic in class' },
+                        ].map((sub) => (
+                          <tr key={sub.id} className="hover:bg-sky-50/30 transition-all">
+                            <td className="p-3 font-extrabold text-slate-900">{sub.subject}</td>
+                            <td className="p-3 text-center font-mono font-bold text-slate-700">{sub.t1}%</td>
+                            <td className="p-3 text-center font-mono font-bold text-slate-700">{sub.mid}%</td>
+                            <td className="p-3 text-center font-mono font-bold text-slate-700">{sub.term}%</td>
+                            <td className="p-3 text-center">
+                              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-lg font-black text-[11px]">
+                                {sub.avg}% ({sub.grade})
                               </span>
                             </td>
-                            <td className="p-2.5 px-3 text-slate-500">{m.remarks}</td>
+                            <td className="p-3 text-center font-extrabold text-emerald-600 text-[11px]">
+                              {sub.trend}
+                            </td>
+                            <td className="p-3 text-slate-500 font-medium text-[11px]">{sub.remarks}</td>
                           </tr>
                         ))}
                       </tbody>
