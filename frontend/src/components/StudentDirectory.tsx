@@ -287,24 +287,6 @@ export const StudentDirectory: React.FC = () => {
         </div>
       )}
 
-      {/* Role Context Helper Box */}
-      <div className="bg-sky-50/70 border border-sky-200/80 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-white text-sky-700 shadow-xs">
-            {isAdmin ? <ShieldCheck className="w-5 h-5 text-emerald-600" /> : <GraduationCap className="w-5 h-5 text-sky-600" />}
-          </div>
-          <div>
-            <p className="font-extrabold text-slate-900">
-              {isAdmin ? 'Executive Oversight Mode Active' : 'Admission Officer Data Entry Mode Active'}
-            </p>
-            <p className="text-slate-500 font-medium">
-              {isAdmin
-                ? 'As Admin, you can approve Transfers, issue Suspensions, and oversee overall student stats.'
-                : 'As Admission Officer, you are responsible for day-to-day student registration and parent contacts.'}
-            </p>
-          </div>
-        </div>
-      </div>
 
       {/* Summary KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
