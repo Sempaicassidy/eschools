@@ -111,6 +111,7 @@ export const StudentDirectory: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedReportYear, setSelectedReportYear] = useState<'2026' | '2025' | '2024'>('2026');
   const [selectedReportTerm, setSelectedReportTerm] = useState<'term2' | 'term1' | 'midterm'>('term2');
+  const [examResultType, setExamResultType] = useState<'internal' | 'necta_national'>('internal');
 
   // Modals & Full Page View State
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -437,166 +438,312 @@ export const StudentDirectory: React.FC = () => {
           </button>
         </div>
 
-        {/* TAB 1: OFFICIAL NECTA PROGRESS REPORT & TRANSCRIPT */}
+        {/* TAB 1: OFFICIAL PROGRESS REPORT & TRANSCRIPT */}
         {dossierTab === 'necta_report' && (
           <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs print:p-0 print:border-none">
             {/* Academic Year & Class Filter Selector */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100/90 p-3.5 rounded-2xl border border-slate-200 text-xs font-medium print:hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-100/90 p-3.5 rounded-2xl border border-slate-200 text-xs font-medium print:hidden">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-sky-600" />
-                <span className="font-extrabold text-slate-900">Select Academic Year & Class History:</span>
+                <span className="font-extrabold text-slate-900">Academic Year & Class Selection:</span>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
                 <select
                   value={selectedReportYear}
-                  onChange={(e) => setSelectedReportYear(e.target.value as any)}
+                  onChange={(e) => {
+                    setSelectedReportYear(e.target.value as any);
+                    if (e.target.value !== '2025') {
+                      setExamResultType('internal');
+                    }
+                  }}
                   className="bg-white border border-slate-300 font-extrabold text-slate-900 px-3 py-1.5 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 shadow-xs"
                 >
-                  <option value="2026">2026 (Form III - Current Year)</option>
-                  <option value="2025">2025 (Form II - Previous Year & FTNA)</option>
+                  <option value="2026">2026 (Form III - Current Stage)</option>
+                  <option value="2025">2025 (Form II - NECTA National Exam Class)</option>
                   <option value="2024">2024 (Form I - Entry Year)</option>
                 </select>
 
-                <select
-                  value={selectedReportTerm}
-                  onChange={(e) => setSelectedReportTerm(e.target.value as any)}
-                  className="bg-white border border-slate-300 font-extrabold text-slate-900 px-3 py-1.5 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 shadow-xs"
-                >
-                  <option value="term2">Term II Final Evaluation</option>
-                  <option value="term1">Term I Terminal Evaluation</option>
-                  <option value="midterm">Mid-Term Assessment</option>
-                </select>
+                {examResultType === 'internal' && (
+                  <select
+                    value={selectedReportTerm}
+                    onChange={(e) => setSelectedReportTerm(e.target.value as any)}
+                    className="bg-white border border-slate-300 font-extrabold text-slate-900 px-3 py-1.5 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 shadow-xs"
+                  >
+                    <option value="term2">Term II Final Evaluation</option>
+                    <option value="term1">Term I Terminal Evaluation</option>
+                    <option value="midterm">Mid-Term Assessment</option>
+                  </select>
+                )}
               </div>
             </div>
 
-            {/* Letterhead */}
-            <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
-              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">The United Republic of Tanzania</p>
-              <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase">HAULA INTERNATIONAL SECONDARY SCHOOL</h2>
-              <p className="text-xs font-bold text-slate-600">P.O. Box 4520, Dar es Salaam • Registration No: S.4820/001</p>
-              <span className="inline-block mt-2 bg-slate-900 text-white font-black px-4 py-1 rounded-full text-xs uppercase tracking-wider">
-                Official Student Terminal Progress Report Card ({selectedReportYear})
-              </span>
-            </div>
+            {/* Tanzanian Curriculum NECTA Exam Class Notice & Type Switcher */}
+            {(selectedReportYear === '2025' || (viewingStudent.class_name && (viewingStudent.class_name.includes('Form II') || viewingStudent.class_name.includes('Form IV')))) && (
+              <div className="bg-sky-50/80 border border-sky-200 p-4 rounded-2xl space-y-3 print:hidden">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <Award className="w-5 h-5 text-sky-600" />
+                    <div>
+                      <h4 className="font-extrabold text-slate-900 text-xs">Mtaala wa Tanzania (NECTA Exam Class Separation)</h4>
+                      <p className="text-[11px] text-slate-600 font-medium">
+                        Form II (FTNA) & Form IV (CSEE) are official NECTA National Exam classes. Internal school results are managed separately from official NECTA national results.
+                      </p>
+                    </div>
+                  </div>
 
-            {/* Student Metadata Header */}
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-medium">
-              <div>
-                <span className="text-slate-400 font-semibold block text-[10px]">Student Name</span>
-                <span className="font-extrabold text-slate-900">{studentFullName}</span>
+                  {/* Toggle Selector */}
+                  <div className="flex items-center gap-1 bg-white border border-sky-200 p-1 rounded-xl shadow-xs text-xs font-extrabold">
+                    <button
+                      type="button"
+                      onClick={() => setExamResultType('internal')}
+                      className={`px-3 py-1.5 rounded-lg transition-all ${
+                        examResultType === 'internal' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      🏫 Matokeo ya Ndani ya Shule (Internal)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExamResultType('necta_national')}
+                      className={`px-3 py-1.5 rounded-lg transition-all ${
+                        examResultType === 'necta_national' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      🇹🇿 Matokeo Rasmi ya NECTA (FTNA National)
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div>
-                <span className="text-slate-400 font-semibold block text-[10px]">Admission / Reg No</span>
-                <span className="font-mono font-bold text-slate-900">{viewingStudent.admission_number}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 font-semibold block text-[10px]">Evaluated Class</span>
-                <span className="font-bold text-slate-900">
-                  {selectedReportYear === '2026' ? 'Form III - Science' : selectedReportYear === '2025' ? 'Form II - Stream A' : 'Form I - Stream A'}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 font-semibold block text-[10px]">Academic Term & Year</span>
-                <span className="font-bold text-slate-900">
-                  {selectedReportTerm === 'term2' ? 'Term II' : selectedReportTerm === 'term1' ? 'Term I' : 'Mid-Term'} - {selectedReportYear} Evaluation
-                </span>
-              </div>
-            </div>
+            )}
 
-            {/* Official NECTA Grade Table */}
-            <div className="border border-slate-900 rounded-xl overflow-hidden">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
-                    <th className="p-3 border-r border-slate-800">Subject Code & Name</th>
-                    <th className="p-3 text-center border-r border-slate-800">Test 1 (20%)</th>
-                    <th className="p-3 text-center border-r border-slate-800">Mid-Term (20%)</th>
-                    <th className="p-3 text-center border-r border-slate-800">Terminal (60%)</th>
-                    <th className="p-3 text-center border-r border-slate-800">Total Score</th>
-                    <th className="p-3 text-center border-r border-slate-800">NECTA Grade</th>
-                    <th className="p-3 text-center border-r border-slate-800">Points</th>
-                    <th className="p-3">Teacher Remarks</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
-                  {(selectedReportYear === '2026' ? [
-                    { code: '011', name: 'Civics', t1: 88, mid: 90, term: 92, score: 91, grade: 'A', pts: 1, remarks: 'Very clear constitutional understanding' },
-                    { code: '012', name: 'History', t1: 84, mid: 87, term: 89, score: 87, grade: 'A', pts: 1, remarks: 'Strong essay structure & recall' },
-                    { code: '013', name: 'Geography', t1: 78, mid: 80, term: 82, score: 81, grade: 'A', pts: 1, remarks: 'Good map work & contour analysis' },
-                    { code: '021', name: 'Kiswahili', t1: 80, mid: 83, term: 86, score: 84, grade: 'A', pts: 1, remarks: 'Fasihi na insha yenye mwelekeo wa juu' },
-                    { code: '022', name: 'English Language', t1: 89, mid: 92, term: 93, score: 92, grade: 'A', pts: 1, remarks: 'Excellent fluency & vocabulary' },
-                    { code: '031', name: 'Physics', t1: 76, mid: 81, term: 80, score: 79, grade: 'A', pts: 1, remarks: 'Very good in mechanics & optics' },
-                    { code: '032', name: 'Chemistry', t1: 70, mid: 72, term: 75, score: 73, grade: 'B', pts: 2, remarks: 'Good chemical equations balance' },
-                    { code: '033', name: 'Biology', t1: 82, mid: 85, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Outstanding practical drawings' },
-                    { code: '041', name: 'Basic Mathematics', t1: 85, mid: 88, term: 91, score: 89, grade: 'A', pts: 1, remarks: 'Top logical problem solver' },
-                    { code: '061', name: 'Information & Computer Studies (ICS)', t1: 90, mid: 94, term: 96, score: 95, grade: 'A', pts: 1, remarks: 'Excellent computer programming logic' },
-                  ] : selectedReportYear === '2025' ? [
-                    { code: '011', name: 'Civics', t1: 85, mid: 86, term: 88, score: 87, grade: 'A', pts: 1, remarks: 'Good civic responsibility' },
-                    { code: '012', name: 'History', t1: 80, mid: 82, term: 85, score: 83, grade: 'A', pts: 1, remarks: 'Good African history analysis' },
-                    { code: '013', name: 'Geography', t1: 75, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Good understanding of physical geography' },
-                    { code: '021', name: 'Kiswahili', t1: 78, mid: 80, term: 82, score: 80, grade: 'A', pts: 1, remarks: 'Ufahamu mzuri wa sarufi' },
-                    { code: '022', name: 'English Language', t1: 85, mid: 88, term: 90, score: 88, grade: 'A', pts: 1, remarks: 'Good grammar & essay writing' },
-                    { code: '031', name: 'Physics', t1: 72, mid: 75, term: 78, score: 76, grade: 'A', pts: 1, remarks: 'Solid understanding of physics principles' },
-                    { code: '032', name: 'Chemistry', t1: 68, mid: 70, term: 72, score: 70, grade: 'B', pts: 2, remarks: 'Fair effort in stoichiometry' },
-                    { code: '033', name: 'Biology', t1: 80, mid: 82, term: 85, score: 83, grade: 'A', pts: 1, remarks: 'Very good in botany & zoology' },
-                    { code: '041', name: 'Basic Mathematics', t1: 82, mid: 84, term: 86, score: 85, grade: 'A', pts: 1, remarks: 'Good in geometry & algebra' },
-                    { code: '061', name: 'Information & Computer Studies (ICS)', t1: 88, mid: 90, term: 92, score: 90, grade: 'A', pts: 1, remarks: 'Good computer fundamentals' },
-                  ] : [
-                    { code: '011', name: 'Civics', t1: 80, mid: 82, term: 84, score: 82, grade: 'A', pts: 1, remarks: 'Solid orientation in civics' },
-                    { code: '012', name: 'History', t1: 76, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Good effort in world history' },
-                    { code: '013', name: 'Geography', t1: 72, mid: 74, term: 76, score: 75, grade: 'A', pts: 1, remarks: 'Good map skills' },
-                    { code: '021', name: 'Kiswahili', t1: 75, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Kazi nzuri ya sarufi' },
-                    { code: '022', name: 'English Language', t1: 82, mid: 84, term: 86, score: 84, grade: 'A', pts: 1, remarks: 'Good reading comprehension' },
-                    { code: '031', name: 'Physics', t1: 70, mid: 72, term: 74, score: 72, grade: 'B', pts: 2, remarks: 'Fair calculation skills' },
-                    { code: '032', name: 'Chemistry', t1: 65, mid: 68, term: 70, score: 68, grade: 'B', pts: 2, remarks: 'Needs more practice in lab safety' },
-                    { code: '033', name: 'Biology', t1: 78, mid: 80, term: 82, score: 80, grade: 'A', pts: 1, remarks: 'Good plant biology' },
-                    { code: '041', name: 'Basic Mathematics', t1: 80, mid: 82, term: 84, score: 82, grade: 'A', pts: 1, remarks: 'Good arithmetic foundations' },
-                    { code: '061', name: 'Information & Computer Studies (ICS)', t1: 85, mid: 86, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Good keyboarding & office apps' },
-                  ]).map((sub) => (
-                    <tr key={sub.code} className="hover:bg-slate-50">
-                      <td className="p-3 border-r border-slate-200 font-extrabold">{sub.code} - {sub.name}</td>
-                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.t1}%</td>
-                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.mid}%</td>
-                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.term}%</td>
-                      <td className="p-3 text-center border-r border-slate-200 font-mono font-black text-sm">{sub.score}%</td>
-                      <td className="p-3 text-center border-r border-slate-200 font-black">
-                        <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">Grade {sub.grade}</span>
-                      </td>
-                      <td className="p-3 text-center border-r border-slate-200 font-black">{sub.pts}</td>
-                      <td className="p-3 text-slate-600 text-[11px]">{sub.remarks}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {/* VIEW MODE A: OFFICIAL NECTA NATIONAL EXAMINATION STATEMENT OF RESULTS */}
+            {examResultType === 'necta_national' ? (
+              <div className="space-y-6">
+                {/* NECTA Official Letterhead */}
+                <div className="border-b-2 border-emerald-950 pb-4 text-center space-y-1">
+                  <p className="text-[11px] font-black uppercase tracking-widest text-emerald-800">The United Republic of Tanzania</p>
+                  <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase">NATIONAL EXAMINATIONS COUNCIL OF TANZANIA (NECTA)</h2>
+                  <p className="text-xs font-extrabold text-slate-800 uppercase">FORM TWO NATIONAL ASSESSMENT (FTNA) 2025 STATEMENT OF RESULTS</p>
+                  <span className="inline-block mt-2 bg-emerald-900 text-white font-black px-4 py-1 rounded-full text-xs uppercase tracking-wider">
+                    Official Government NECTA Certificate Record
+                  </span>
+                </div>
 
-            {/* Official NECTA Summary Box */}
-            <div className="grid md:grid-cols-3 gap-4 border-2 border-slate-900 p-5 rounded-2xl bg-slate-50 text-xs">
-              <div className="space-y-1 border-r md:border-slate-300 pr-4">
-                <span className="text-[10px] font-bold text-slate-500 uppercase block">Total Score & Average</span>
-                <p className="text-xl font-black text-slate-900">
-                  {selectedReportYear === '2026' ? '858 / 1000' : selectedReportYear === '2025' ? '827 / 1000' : '783 / 1000'} Marks
-                </p>
-                <p className="text-sm font-extrabold text-emerald-700">
-                  Average: {selectedReportYear === '2026' ? '85.8%' : selectedReportYear === '2025' ? '82.7%' : '78.3%'} (Distinction)
-                </p>
-              </div>
+                {/* Candidate NECTA Registration Details */}
+                <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-200 text-xs font-medium">
+                  <div>
+                    <span className="text-slate-500 font-semibold block text-[10px]">Candidate Full Name</span>
+                    <span className="font-extrabold text-slate-900">{studentFullName}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 font-semibold block text-[10px]">NECTA Candidate Index No</span>
+                    <span className="font-mono font-black text-emerald-950">S.4820 / 0012 / 2025</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 font-semibold block text-[10px]">Examination Center Name</span>
+                    <span className="font-bold text-slate-900">S.4820 - HAULA INTL SECONDARY</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 font-semibold block text-[10px]">Sex & Residency</span>
+                    <span className="font-bold text-slate-900 capitalize">{viewingStudent.gender} · {viewingStudent.boarding_status}</span>
+                  </div>
+                </div>
 
-              <div className="space-y-1 border-r md:border-slate-300 pr-4">
-                <span className="text-[10px] font-bold text-slate-500 uppercase block">Official NECTA Division</span>
-                <p className="text-xl font-black text-emerald-800">
-                  {selectedReportYear === '2026' ? 'DIVISION I (7 Points)' : selectedReportYear === '2025' ? 'DIVISION I (8 Points - FTNA)' : 'DIVISION I (10 Points)'}
-                </p>
-                <p className="text-xs font-bold text-slate-700">Class Position: Rank #3 out of 45 Students</p>
-              </div>
+                {/* NECTA Subject Grade Table */}
+                <div className="border border-slate-900 rounded-xl overflow-hidden">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-emerald-950 text-white font-black text-[10px] uppercase border-b border-emerald-950">
+                        <th className="p-3 border-r border-emerald-900">Subject Code & Subject Name</th>
+                        <th className="p-3 text-center border-r border-emerald-900">NECTA National Grade</th>
+                        <th className="p-3 text-center border-r border-emerald-900">Points Assigned</th>
+                        <th className="p-3">NECTA Performance Standard</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                      {[
+                        { code: '011', name: 'CIVICS', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '012', name: 'HISTORY', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '013', name: 'GEOGRAPHY', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '021', name: 'KISWAHILI', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '022', name: 'ENGLISH LANGUAGE', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '031', name: 'PHYSICS', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '032', name: 'CHEMISTRY', grade: 'B', pts: 2, desc: 'VERY GOOD (65% - 74%)' },
+                        { code: '033', name: 'BIOLOGY', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '041', name: 'BASIC MATHEMATICS', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                        { code: '061', name: 'INFORMATION & COMPUTER STUDIES', grade: 'A', pts: 1, desc: 'EXCELLENT (75% - 100%)' },
+                      ].map((sub) => (
+                        <tr key={sub.code} className="hover:bg-emerald-50/40">
+                          <td className="p-3 border-r border-slate-200 font-extrabold">{sub.code} - {sub.name}</td>
+                          <td className="p-3 text-center border-r border-slate-200 font-black">
+                            <span className={`px-2.5 py-0.5 rounded font-black text-xs ${
+                              sub.grade === 'A' ? 'bg-emerald-100 text-emerald-950 border border-emerald-300' : 'bg-blue-100 text-blue-950'
+                            }`}>
+                              GRADE {sub.grade}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center border-r border-slate-200 font-black text-sm">{sub.pts}</td>
+                          <td className="p-3 text-slate-700 text-[11px] font-bold">{sub.desc}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-500 uppercase block">Character & Behavior Rating</span>
-                <p className="text-sm font-black text-slate-900">Conduct: A - Very Good (Tabia Njema)</p>
-                <p className="text-[11px] text-slate-500 font-medium">Class Teacher: Tr. Alex Mhagama</p>
+                {/* NECTA Official National Summary Box */}
+                <div className="grid md:grid-cols-3 gap-4 border-2 border-emerald-900 p-5 rounded-2xl bg-emerald-50/40 text-xs">
+                  <div className="space-y-1 border-r md:border-emerald-200 pr-4">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase block">Official NECTA Division</span>
+                    <p className="text-2xl font-black text-emerald-950">DIVISION I (8 POINTS)</p>
+                    <p className="text-xs font-extrabold text-emerald-700">Qualified for O-Level Advanced Stage</p>
+                  </div>
+
+                  <div className="space-y-1 border-r md:border-emerald-200 pr-4">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase block">NECTA Center & National Rank</span>
+                    <p className="text-lg font-black text-slate-900">Center Rank: #2 / 180 Candidates</p>
+                    <p className="text-xs font-bold text-slate-700">National Rank: #14 out of 480,000 Nationwide</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase block">NECTA Executive Certification</span>
+                    <p className="text-sm font-black text-emerald-900">STATUS: PASSED (FTNA CERTIFIED)</p>
+                    <p className="text-[11px] text-slate-600 font-medium">Verified by NECTA National Database</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              /* VIEW MODE B: INTERNAL SCHOOL CONTINUOUS ASSESSMENT RESULTS */
+              <div className="space-y-6">
+                {/* Letterhead */}
+                <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
+                  <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">The United Republic of Tanzania</p>
+                  <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase">HAULA INTERNATIONAL SECONDARY SCHOOL</h2>
+                  <p className="text-xs font-bold text-slate-600">P.O. Box 4520, Dar es Salaam • Registration No: S.4820/001</p>
+                  <span className="inline-block mt-2 bg-slate-900 text-white font-black px-4 py-1 rounded-full text-xs uppercase tracking-wider">
+                    Internal School Terminal Progress Report Card ({selectedReportYear})
+                  </span>
+                </div>
+
+                {/* Student Metadata Header */}
+                <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-medium">
+                  <div>
+                    <span className="text-slate-400 font-semibold block text-[10px]">Student Name</span>
+                    <span className="font-extrabold text-slate-900">{studentFullName}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-semibold block text-[10px]">Admission / Reg No</span>
+                    <span className="font-mono font-bold text-slate-900">{viewingStudent.admission_number}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-semibold block text-[10px]">Evaluated Class</span>
+                    <span className="font-bold text-slate-900">
+                      {selectedReportYear === '2026' ? 'Form III - Science' : selectedReportYear === '2025' ? 'Form II - Stream A' : 'Form I - Stream A'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-semibold block text-[10px]">Academic Term & Year</span>
+                    <span className="font-bold text-slate-900">
+                      {selectedReportTerm === 'term2' ? 'Term II' : selectedReportTerm === 'term1' ? 'Term I' : 'Mid-Term'} - {selectedReportYear} Evaluation
+                    </span>
+                  </div>
+                </div>
+
+                {/* Internal Subject Grade Table */}
+                <div className="border border-slate-900 rounded-xl overflow-hidden">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
+                        <th className="p-3 border-r border-slate-800">Subject Code & Name</th>
+                        <th className="p-3 text-center border-r border-slate-800">Test 1 (20%)</th>
+                        <th className="p-3 text-center border-r border-slate-800">Mid-Term (20%)</th>
+                        <th className="p-3 text-center border-r border-slate-800">Terminal (60%)</th>
+                        <th className="p-3 text-center border-r border-slate-800">Total Score</th>
+                        <th className="p-3 text-center border-r border-slate-800">Grade</th>
+                        <th className="p-3 text-center border-r border-slate-800">Points</th>
+                        <th className="p-3">Teacher Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                      {(selectedReportYear === '2026' ? [
+                        { code: '011', name: 'Civics', t1: 88, mid: 90, term: 92, score: 91, grade: 'A', pts: 1, remarks: 'Very clear constitutional understanding' },
+                        { code: '012', name: 'History', t1: 84, mid: 87, term: 89, score: 87, grade: 'A', pts: 1, remarks: 'Strong essay structure & recall' },
+                        { code: '013', name: 'Geography', t1: 78, mid: 80, term: 82, score: 81, grade: 'A', pts: 1, remarks: 'Good map work & contour analysis' },
+                        { code: '021', name: 'Kiswahili', t1: 80, mid: 83, term: 86, score: 84, grade: 'A', pts: 1, remarks: 'Fasihi na insha yenye mwelekeo wa juu' },
+                        { code: '022', name: 'English Language', t1: 89, mid: 92, term: 93, score: 92, grade: 'A', pts: 1, remarks: 'Excellent fluency & vocabulary' },
+                        { code: '031', name: 'Physics', t1: 76, mid: 81, term: 80, score: 79, grade: 'A', pts: 1, remarks: 'Very good in mechanics & optics' },
+                        { code: '032', name: 'Chemistry', t1: 70, mid: 72, term: 75, score: 73, grade: 'B', pts: 2, remarks: 'Good chemical equations balance' },
+                        { code: '033', name: 'Biology', t1: 82, mid: 85, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Outstanding practical drawings' },
+                        { code: '041', name: 'Basic Mathematics', t1: 85, mid: 88, term: 91, score: 89, grade: 'A', pts: 1, remarks: 'Top logical problem solver' },
+                        { code: '061', name: 'Information & Computer Studies (ICS)', t1: 90, mid: 94, term: 96, score: 95, grade: 'A', pts: 1, remarks: 'Excellent computer programming logic' },
+                      ] : selectedReportYear === '2025' ? [
+                        { code: '011', name: 'Civics', t1: 85, mid: 86, term: 88, score: 87, grade: 'A', pts: 1, remarks: 'Good civic responsibility' },
+                        { code: '012', name: 'History', t1: 80, mid: 82, term: 85, score: 83, grade: 'A', pts: 1, remarks: 'Good African history analysis' },
+                        { code: '013', name: 'Geography', t1: 75, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Good understanding of physical geography' },
+                        { code: '021', name: 'Kiswahili', t1: 78, mid: 80, term: 82, score: 80, grade: 'A', pts: 1, remarks: 'Ufahamu mzuri wa sarufi' },
+                        { code: '022', name: 'English Language', t1: 85, mid: 88, term: 90, score: 88, grade: 'A', pts: 1, remarks: 'Good grammar & essay writing' },
+                        { code: '031', name: 'Physics', t1: 72, mid: 75, term: 78, score: 76, grade: 'A', pts: 1, remarks: 'Solid understanding of physics principles' },
+                        { code: '032', name: 'Chemistry', t1: 68, mid: 70, term: 72, score: 70, grade: 'B', pts: 2, remarks: 'Fair effort in stoichiometry' },
+                        { code: '033', name: 'Biology', t1: 80, mid: 82, term: 85, score: 83, grade: 'A', pts: 1, remarks: 'Very good in botany & zoology' },
+                        { code: '041', name: 'Basic Mathematics', t1: 82, mid: 84, term: 86, score: 85, grade: 'A', pts: 1, remarks: 'Good in geometry & algebra' },
+                        { code: '061', name: 'Information & Computer Studies (ICS)', t1: 88, mid: 90, term: 92, score: 90, grade: 'A', pts: 1, remarks: 'Good computer fundamentals' },
+                      ] : [
+                        { code: '011', name: 'Civics', t1: 80, mid: 82, term: 84, score: 82, grade: 'A', pts: 1, remarks: 'Solid orientation in civics' },
+                        { code: '012', name: 'History', t1: 76, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Good effort in world history' },
+                        { code: '013', name: 'Geography', t1: 72, mid: 74, term: 76, score: 75, grade: 'A', pts: 1, remarks: 'Good map skills' },
+                        { code: '021', name: 'Kiswahili', t1: 75, mid: 78, term: 80, score: 78, grade: 'A', pts: 1, remarks: 'Kazi nzuri ya sarufi' },
+                        { code: '022', name: 'English Language', t1: 82, mid: 84, term: 86, score: 84, grade: 'A', pts: 1, remarks: 'Good reading comprehension' },
+                        { code: '031', name: 'Physics', t1: 70, mid: 72, term: 74, score: 72, grade: 'B', pts: 2, remarks: 'Fair calculation skills' },
+                        { code: '032', name: 'Chemistry', t1: 65, mid: 68, term: 70, score: 68, grade: 'B', pts: 2, remarks: 'Needs more practice in lab safety' },
+                        { code: '033', name: 'Biology', t1: 78, mid: 80, term: 82, score: 80, grade: 'A', pts: 1, remarks: 'Good plant biology' },
+                        { code: '041', name: 'Basic Mathematics', t1: 80, mid: 82, term: 84, score: 82, grade: 'A', pts: 1, remarks: 'Good arithmetic foundations' },
+                        { code: '061', name: 'Information & Computer Studies (ICS)', t1: 85, mid: 86, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Good keyboarding & office apps' },
+                      ]).map((sub) => (
+                        <tr key={sub.code} className="hover:bg-slate-50">
+                          <td className="p-3 border-r border-slate-200 font-extrabold">{sub.code} - {sub.name}</td>
+                          <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.t1}%</td>
+                          <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.mid}%</td>
+                          <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.term}%</td>
+                          <td className="p-3 text-center border-r border-slate-200 font-mono font-black text-sm">{sub.score}%</td>
+                          <td className="p-3 text-center border-r border-slate-200 font-black">
+                            <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">Grade {sub.grade}</span>
+                          </td>
+                          <td className="p-3 text-center border-r border-slate-200 font-black">{sub.pts}</td>
+                          <td className="p-3 text-slate-600 text-[11px]">{sub.remarks}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Internal Summary Box */}
+                <div className="grid md:grid-cols-3 gap-4 border-2 border-slate-900 p-5 rounded-2xl bg-slate-50 text-xs">
+                  <div className="space-y-1 border-r md:border-slate-300 pr-4">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase block">Internal Score & Average</span>
+                    <p className="text-xl font-black text-slate-900">
+                      {selectedReportYear === '2026' ? '858 / 1000' : selectedReportYear === '2025' ? '827 / 1000' : '783 / 1000'} Marks
+                    </p>
+                    <p className="text-sm font-extrabold text-emerald-700">
+                      Average: {selectedReportYear === '2026' ? '85.8%' : selectedReportYear === '2025' ? '82.7%' : '78.3%'} (Distinction)
+                    </p>
+                  </div>
+
+                  <div className="space-y-1 border-r md:border-slate-300 pr-4">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase block">Internal Grade / Division</span>
+                    <p className="text-xl font-black text-emerald-800">
+                      {selectedReportYear === '2026' ? 'DIVISION I (7 Points)' : selectedReportYear === '2025' ? 'DIVISION I (8 Points)' : 'DIVISION I (10 Points)'}
+                    </p>
+                    <p className="text-xs font-bold text-slate-700">Class Position: Rank #3 out of 45 Students</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase block">Character & Behavior Rating</span>
+                    <p className="text-sm font-black text-slate-900">Conduct: A - Very Good (Tabia Njema)</p>
+                    <p className="text-[11px] text-slate-500 font-medium">Class Teacher: Tr. Alex Mhagama</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Signatures & Approval */}
             <div className="grid sm:grid-cols-2 gap-6 pt-6 border-t border-slate-200 text-xs font-medium">
