@@ -27,7 +27,11 @@ import {
   Clock,
   TrendingUp,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  CreditCard,
+  CheckSquare,
+  Shield,
+  FileSpreadsheet
 } from 'lucide-react';
 
 type StudentItem = {
@@ -110,6 +114,7 @@ export const StudentDirectory: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
+  const [dossierTab, setDossierTab] = useState<'necta_report' | 'timeline' | 'attendance' | 'fees' | 'bio'>('necta_report');
   const [governanceStudent, setGovernanceStudent] = useState<StudentItem | null>(null);
   const [governanceAction, setGovernanceAction] = useState<'transfer' | 'suspend' | 'graduate'>('transfer');
   const [governanceReason, setGovernanceReason] = useState<string>('');
@@ -282,7 +287,7 @@ export const StudentDirectory: React.FC = () => {
   const inputStyle = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all font-medium";
 
   /* =================================================================== */
-  /* DEDICATED FULL-PAGE VIEW: CUMULATIVE STUDENT TIMELINE & FILE       */
+  /* DEDICATED FULL-PAGE VIEW: HYBRID TABBED STUDENT DOSSIER & NECTA    */
   /* =================================================================== */
   if (viewingStudent) {
     const studentFullName = `${viewingStudent.first_name} ${viewingStudent.middle_name || ''} ${viewingStudent.last_name}`;
@@ -297,15 +302,15 @@ export const StudentDirectory: React.FC = () => {
               className="flex items-center gap-2 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all shadow-xs"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Student Directory</span>
+              <span>Back to Directory</span>
             </button>
 
             <div>
               <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                Student Cumulative Academic File & History
+                Official Student Cumulative Dossier & Record File
               </h1>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Tracking {studentFullName}'s complete journey from admission to current stage.
+                Full academic history, NECTA reports, hostel logs, and fee ledger for {studentFullName}.
               </p>
             </div>
           </div>
@@ -316,7 +321,7 @@ export const StudentDirectory: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-md"
             >
               <Printer className="w-4 h-4" />
-              <span>Print Complete Dossier File</span>
+              <span>Print Official Transcript</span>
             </button>
             <button
               onClick={() => {
@@ -325,17 +330,17 @@ export const StudentDirectory: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
             >
               <Pencil className="w-4 h-4" />
-              <span>Edit Student Bio</span>
+              <span>Edit Record</span>
             </button>
           </div>
         </div>
 
-        {/* 1. Student Hero Profile Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden space-y-6">
-          <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 relative z-10">
-            <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-              {/* Photo / Avatar */}
-              <div className={`w-24 h-24 md:w-28 md:h-28 rounded-3xl flex items-center justify-center font-black text-4xl text-white shadow-2xl border-4 border-white/20 shrink-0 ${
+        {/* Student Hero Header Banner */}
+        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 md:p-7 shadow-xl space-y-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
+              {/* Avatar */}
+              <div className={`w-20 h-20 md:w-24 md:h-24 rounded-3xl flex items-center justify-center font-black text-3xl text-white shadow-2xl border-4 border-white/20 shrink-0 ${
                 viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-500 to-blue-600' : 'bg-gradient-to-tr from-rose-500 to-pink-600'
               }`}>
                 {viewingStudent.photo ? (
@@ -345,247 +350,382 @@ export const StudentDirectory: React.FC = () => {
                 )}
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                  <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">{studentFullName}</h2>
-                  <span className={`px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider ${
-                    viewingStudent.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300'
-                  }`}>
+                  <h2 className="text-2xl font-black text-white">{studentFullName}</h2>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     {viewingStudent.status}
                   </span>
                 </div>
-
-                <p className="text-sky-300 font-mono text-xs font-bold">
-                  ADMISSION NO: {viewingStudent.admission_number}
-                </p>
-
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1 text-xs">
-                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-sky-200">
+                <p className="text-sky-300 font-mono text-xs font-bold">ADM: {viewingStudent.admission_number}</p>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs pt-1">
+                  <span className="bg-white/10 px-2.5 py-0.5 rounded-lg font-bold text-sky-200">
                     Class: {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A
                   </span>
-                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-indigo-200 capitalize">
-                    Residency: {viewingStudent.boarding_status}
+                  <span className="bg-white/10 px-2.5 py-0.5 rounded-lg font-bold text-indigo-200 capitalize">
+                    {viewingStudent.boarding_status}
                   </span>
-                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-emerald-200">
+                  <span className="bg-white/10 px-2.5 py-0.5 rounded-lg font-bold text-emerald-200">
                     Age: {calculateAge(viewingStudent.date_of_birth)}
-                  </span>
-                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-rose-200">
-                    Blood Group: {viewingStudent.blood_group || 'O+'}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Quick Balance Status */}
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 text-right font-medium text-xs min-w-[200px]">
-              <span className="text-slate-300 block text-[10px] uppercase font-bold">Fee Status Ledger</span>
-              <p className="text-xl font-black text-emerald-400 mt-1">
+            {/* Quick Status Pill */}
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 text-right font-medium text-xs">
+              <span className="text-slate-300 block text-[10px] uppercase font-bold">Current Fee Balance</span>
+              <p className="text-xl font-black text-emerald-400 mt-0.5">
                 TZS {viewingStudent.fee_balance !== undefined ? viewingStudent.fee_balance.toLocaleString() : '150,000'}
               </p>
-              <span className="text-[11px] text-slate-300 mt-1 block">Current Term Balance</span>
             </div>
           </div>
         </div>
 
-        {/* 2. Visual Academic Progression Timeline (Tangu Alipoanza Shule mpaka Sasa) */}
-        <div className="bg-white border border-slate-200/80 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs">
-          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-            <div>
-              <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
-                <Clock className="w-4 h-4 text-sky-600" /> Student Progression Timeline (Academic Journey)
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Complete progression milestone history from enrollment day to current grade.
-              </p>
-            </div>
-            <span className="bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full text-xs font-black">
-              Enrolled Since: {viewingStudent.admission_date || '10th Jan 2024'}
-            </span>
-          </div>
+        {/* Dedicated Dossier Tab Bar */}
+        <div className="flex flex-wrap items-center gap-2 bg-white border border-slate-200 p-2 rounded-2xl shadow-xs text-xs font-bold">
+          <button
+            onClick={() => setDossierTab('necta_report')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              dossierTab === 'necta_report' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Award className="w-4 h-4 text-emerald-400" />
+            <span>Official NECTA Progress Report</span>
+          </button>
 
-          <div className="grid md:grid-cols-3 gap-4 text-xs">
-            {/* Stage 1: Form I (2024) */}
-            <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl space-y-2 relative">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                <span className="bg-slate-900 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Year 1 (2024)</span>
-                <span className="font-black text-slate-700">Form I Stage</span>
-              </div>
-              <p className="font-extrabold text-slate-900 text-xs pt-1">Initial Admission & Orientation</p>
-              <ul className="space-y-1.5 text-slate-600 font-medium text-[11px]">
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Admission Number Assigned: {viewingStudent.admission_number}</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Form I Terminal Exam Avg: 82.4% (Grade A)</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Conduct: Excellent Discipline</li>
-              </ul>
-            </div>
+          <button
+            onClick={() => setDossierTab('timeline')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              dossierTab === 'timeline' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Clock className="w-4 h-4 text-sky-400" />
+            <span>Cumulative Timeline (2024 - 2026)</span>
+          </button>
 
-            {/* Stage 2: Form II (2025) */}
-            <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl space-y-2 relative">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                <span className="bg-slate-900 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Year 2 (2025)</span>
-                <span className="font-black text-slate-700">Form II Stage</span>
-              </div>
-              <p className="font-extrabold text-slate-900 text-xs pt-1">National FTNA Assessment & Boarding</p>
-              <ul className="space-y-1.5 text-slate-600 font-medium text-[11px]">
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Allocated to: {viewingStudent.hostel_name || 'Kilimanjaro Hostel'}</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> National FTNA Exam: Division I (8 Points)</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Promoted to Form III Science Stream</li>
-              </ul>
-            </div>
+          <button
+            onClick={() => setDossierTab('attendance')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              dossierTab === 'attendance' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <Home className="w-4 h-4 text-purple-400" />
+            <span>Attendance, Hostel & Discipline</span>
+          </button>
 
-            {/* Stage 3: Current Stage (2026) */}
-            <div className="bg-sky-50/70 border border-sky-200 p-5 rounded-2xl space-y-2 relative">
-              <div className="flex items-center justify-between border-b border-sky-200 pb-2">
-                <span className="bg-sky-600 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Current (2026)</span>
-                <span className="font-black text-sky-950">Form III Current Stage</span>
-              </div>
-              <p className="font-extrabold text-slate-900 text-xs pt-1">Term II Academic Evaluation</p>
-              <ul className="space-y-1.5 text-slate-700 font-medium text-[11px]">
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Class Teacher: {viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Class Monitor: {viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</li>
-                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Current Term Avg: 85.9% (Rank #3 / 45)</li>
-              </ul>
-            </div>
-          </div>
+          <button
+            onClick={() => setDossierTab('fees')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              dossierTab === 'fees' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <CreditCard className="w-4 h-4 text-amber-400" />
+            <span>Fee Ledger & Transactions</span>
+          </button>
+
+          <button
+            onClick={() => setDossierTab('bio')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+              dossierTab === 'bio' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <User className="w-4 h-4 text-blue-400" />
+            <span>Bio Data & Guardian Contacts</span>
+          </button>
         </div>
 
-        {/* 3. Comprehensive All Subjects & Multi-Test Results Matrix */}
-        <div className="bg-white border border-slate-200/80 p-6 md:p-8 rounded-3xl space-y-4 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-            <div>
-              <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
-                <Award className="w-4 h-4 text-emerald-600" /> Comprehensive Academic Progress & All Test Results Matrix
-              </h3>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Full subject scores across Monthly Assessments (Test 1), Mid-Term, and Terminal Exams.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">
-                Division I (7 Points)
-              </span>
-              <span className="bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full text-xs font-black">
-                Rank: #3 / 45 (Avg: 85.9%)
+        {/* TAB 1: OFFICIAL NECTA PROGRESS REPORT & TRANSCRIPT */}
+        {dossierTab === 'necta_report' && (
+          <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs print:p-0 print:border-none">
+            {/* Letterhead */}
+            <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
+              <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">The United Republic of Tanzania</p>
+              <h2 className="text-xl md:text-2xl font-black text-slate-900 uppercase">HAULA INTERNATIONAL SECONDARY SCHOOL</h2>
+              <p className="text-xs font-bold text-slate-600">P.O. Box 4520, Dar es Salaam • Registration No: S.4820/001</p>
+              <span className="inline-block mt-2 bg-slate-900 text-white font-black px-4 py-1 rounded-full text-xs uppercase tracking-wider">
+                Official Student Terminal Progress Report Card
               </span>
             </div>
-          </div>
 
-          <div className="border border-slate-200/80 rounded-2xl overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50/90 text-slate-600 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-200">
-                  <th className="p-3.5 px-4">Subject Name</th>
-                  <th className="p-3.5 px-4 text-center">Test 1 (20%)</th>
-                  <th className="p-3.5 px-4 text-center">Mid-Term (20%)</th>
-                  <th className="p-3.5 px-4 text-center">Terminal (60%)</th>
-                  <th className="p-3.5 px-4 text-center">Term Avg & Grade</th>
-                  <th className="p-3.5 px-4 text-center">Progress Trend</th>
-                  <th className="p-3.5 px-4">Teacher Remarks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                {[
-                  { id: 1, subject: 'Basic Mathematics', t1: 85, mid: 88, term: 91, avg: 88.9, grade: 'A', trend: '+3.2%', remarks: 'Outstanding logical reasoning & algebra' },
-                  { id: 2, subject: 'Physics', t1: 76, mid: 81, term: 80, avg: 79.4, grade: 'A', trend: '+4.0%', remarks: 'Strong in mechanics & optics calculations' },
-                  { id: 3, subject: 'Chemistry', t1: 70, mid: 72, term: 75, avg: 73.4, grade: 'B', trend: '+2.5%', remarks: 'Good effort in organic chemistry balance' },
-                  { id: 4, subject: 'Biology', t1: 82, mid: 85, term: 88, avg: 86.2, grade: 'A', trend: '+3.0%', remarks: 'Excellent cell structure drawings & practicals' },
-                  { id: 5, subject: 'English Language', t1: 89, mid: 92, term: 93, avg: 92.0, grade: 'A', trend: '+1.5%', remarks: 'High fluency, vocabulary & comprehension' },
-                  { id: 6, subject: 'Kiswahili', t1: 80, mid: 83, term: 86, avg: 84.2, grade: 'A', trend: '+3.0%', remarks: 'Ushahidi wa kipekee katika uchanganuzi wa fasihi' },
-                  { id: 7, subject: 'Geography', t1: 78, mid: 80, term: 82, avg: 80.8, grade: 'A', trend: '+2.0%', remarks: 'Good map work, contours & climate analysis' },
-                  { id: 8, subject: 'History', t1: 84, mid: 87, term: 89, avg: 87.6, grade: 'A', trend: '+2.3%', remarks: 'Strong historical recall & essay structure' },
-                  { id: 9, subject: 'Civics', t1: 88, mid: 90, term: 92, avg: 90.8, grade: 'A', trend: '+2.0%', remarks: 'Deep understanding of constitutional rights' },
-                  { id: 10, subject: 'Computer Studies (ICS)', t1: 90, mid: 94, term: 96, avg: 94.4, grade: 'A', trend: '+2.6%', remarks: 'Top programmer & computer logic in class' },
-                ].map((sub) => (
-                  <tr key={sub.id} className="hover:bg-sky-50/30 transition-all">
-                    <td className="p-3.5 px-4 font-extrabold text-slate-900">{sub.subject}</td>
-                    <td className="p-3.5 px-4 text-center font-mono font-bold text-slate-700">{sub.t1}%</td>
-                    <td className="p-3.5 px-4 text-center font-mono font-bold text-slate-700">{sub.mid}%</td>
-                    <td className="p-3.5 px-4 text-center font-mono font-bold text-slate-700">{sub.term}%</td>
-                    <td className="p-3.5 px-4 text-center">
-                      <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-lg font-black text-xs">
-                        {sub.avg}% ({sub.grade})
-                      </span>
-                    </td>
-                    <td className="p-3.5 px-4 text-center font-extrabold text-emerald-600 text-xs">
-                      {sub.trend}
-                    </td>
-                    <td className="p-3.5 px-4 text-slate-500 font-medium text-xs">{sub.remarks}</td>
+            {/* Student Metadata Header */}
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs font-medium">
+              <div>
+                <span className="text-slate-400 font-semibold block text-[10px]">Student Name</span>
+                <span className="font-extrabold text-slate-900">{studentFullName}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-semibold block text-[10px]">Admission / Reg No</span>
+                <span className="font-mono font-bold text-slate-900">{viewingStudent.admission_number}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-semibold block text-[10px]">Class & Stream</span>
+                <span className="font-bold text-slate-900">{viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-semibold block text-[10px]">Academic Term & Year</span>
+                <span className="font-bold text-slate-900">Term II - 2026 Evaluation</span>
+              </div>
+            </div>
+
+            {/* Official NECTA Grade Table */}
+            <div className="border border-slate-900 rounded-xl overflow-hidden">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
+                    <th className="p-3 border-r border-slate-800">Subject Code & Name</th>
+                    <th className="p-3 text-center border-r border-slate-800">Test 1 (20%)</th>
+                    <th className="p-3 text-center border-r border-slate-800">Mid-Term (20%)</th>
+                    <th className="p-3 text-center border-r border-slate-800">Terminal (60%)</th>
+                    <th className="p-3 text-center border-r border-slate-800">Total Score</th>
+                    <th className="p-3 text-center border-r border-slate-800">NECTA Grade</th>
+                    <th className="p-3 text-center border-r border-slate-800">Points</th>
+                    <th className="p-3">Teacher Remarks</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                </thead>
+                <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                  {[
+                    { code: '011', name: 'Civics', t1: 88, mid: 90, term: 92, score: 91, grade: 'A', pts: 1, remarks: 'Very clear constitutional understanding' },
+                    { code: '012', name: 'History', t1: 84, mid: 87, term: 89, score: 87, grade: 'A', pts: 1, remarks: 'Strong essay structure & recall' },
+                    { code: '013', name: 'Geography', t1: 78, mid: 80, term: 82, score: 81, grade: 'A', pts: 1, remarks: 'Good map work & contour analysis' },
+                    { code: '021', name: 'Kiswahili', t1: 80, mid: 83, term: 86, score: 84, grade: 'A', pts: 1, remarks: 'Fasihi na insha yenye mwelekeo wa juu' },
+                    { code: '022', name: 'English Language', t1: 89, mid: 92, term: 93, score: 92, grade: 'A', pts: 1, remarks: 'Excellent fluency & vocabulary' },
+                    { code: '031', name: 'Physics', t1: 76, mid: 81, term: 80, score: 79, grade: 'A', pts: 1, remarks: 'Very good in mechanics & optics' },
+                    { code: '032', name: 'Chemistry', t1: 70, mid: 72, term: 75, score: 73, grade: 'B', pts: 2, remarks: 'Good chemical equations balance' },
+                    { code: '033', name: 'Biology', t1: 82, mid: 85, term: 88, score: 86, grade: 'A', pts: 1, remarks: 'Outstanding practical drawings' },
+                    { code: '041', name: 'Basic Mathematics', t1: 85, mid: 88, term: 91, score: 89, grade: 'A', pts: 1, remarks: 'Top logical problem solver' },
+                    { code: '061', name: 'Information & Computer Studies (ICS)', t1: 90, mid: 94, term: 96, score: 95, grade: 'A', pts: 1, remarks: 'Excellent computer programming logic' },
+                  ].map((sub) => (
+                    <tr key={sub.code} className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-extrabold">{sub.code} - {sub.name}</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.t1}%</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.mid}%</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-bold">{sub.term}%</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono font-black text-sm">{sub.score}%</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black">
+                        <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">Grade {sub.grade}</span>
+                      </td>
+                      <td className="p-3 text-center border-r border-slate-200 font-black">{sub.pts}</td>
+                      <td className="p-3 text-slate-600 text-[11px]">{sub.remarks}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-        {/* 4. Governance, Hostel & Guardian Details Grid */}
-        <div className="grid md:grid-cols-2 gap-6 text-xs">
-          {/* Class & Hostel Leadership */}
-          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 shadow-xs">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
-              <UserCog className="w-4 h-4 text-indigo-600" /> Class & Hostel Governance Supervision
-            </h3>
-
-            <div className="grid sm:grid-cols-2 gap-3">
-              <div className="bg-sky-50/70 border border-sky-100 p-4 rounded-2xl space-y-1">
-                <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wider block">Mwalimu wa Darasa (Class Teacher)</span>
-                <p className="font-black text-slate-900 text-sm">{viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</p>
-                <p className="text-[11px] text-slate-500">Academic supervisor for {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'}.</p>
+            {/* Official NECTA Summary Box */}
+            <div className="grid md:grid-cols-3 gap-4 border-2 border-slate-900 p-5 rounded-2xl bg-slate-50 text-xs">
+              <div className="space-y-1 border-r md:border-slate-300 pr-4">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Total Score & Average</span>
+                <p className="text-xl font-black text-slate-900">858 / 1000 Marks</p>
+                <p className="text-sm font-extrabold text-emerald-700">Average: 85.8% (Distinction)</p>
               </div>
 
-              <div className="bg-indigo-50/70 border border-indigo-100 p-4 rounded-2xl space-y-1">
-                <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Monita wa Darasa (Class Prefect)</span>
-                <p className="font-black text-slate-900 text-sm">{viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</p>
-                <p className="text-[11px] text-slate-500">Prefect in charge of class discipline & logbook.</p>
+              <div className="space-y-1 border-r md:border-slate-300 pr-4">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Official NECTA Division</span>
+                <p className="text-xl font-black text-emerald-800">DIVISION I (7 Points)</p>
+                <p className="text-xs font-bold text-slate-700">Class Position: Rank #3 out of 45 Students</p>
               </div>
 
-              <div className="bg-purple-50/70 border border-purple-100 p-4 rounded-2xl space-y-1">
-                <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">Bweni la Mwanafunzi (Hostel)</span>
-                <p className="font-black text-slate-900 text-sm">{viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)'}</p>
-                <p className="text-[11px] text-slate-500">Dormitory block for boarding scholars.</p>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Character & Behavior Rating</span>
+                <p className="text-sm font-black text-slate-900">Conduct: A - Very Good (Tabia Njema)</p>
+                <p className="text-[11px] text-slate-500 font-medium">Class Teacher: Tr. Alex Mhagama</p>
+              </div>
+            </div>
+
+            {/* Signatures & Approval */}
+            <div className="grid sm:grid-cols-2 gap-6 pt-6 border-t border-slate-200 text-xs font-medium">
+              <div className="space-y-4">
+                <p className="font-bold text-slate-900">Class Teacher Remarks & Signature:</p>
+                <p className="text-slate-600 italic border-b border-dashed border-slate-300 pb-2">
+                  "Baraka is a exceptionally disciplined and hard-working scholar. Recommended for promotion."
+                </p>
+                <div className="flex items-center justify-between pt-2 text-[11px]">
+                  <span>Signature: ____________________</span>
+                  <span>Date: 01/09/2026</span>
+                </div>
               </div>
 
-              <div className="bg-pink-50/70 border border-pink-100 p-4 rounded-2xl space-y-1">
-                <span className="text-[10px] font-bold text-pink-700 uppercase tracking-wider block">Mwalimu Msimamizi wa Bweni</span>
-                <p className="font-black text-slate-900 text-sm">{viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro'}</p>
-                <p className="text-[11px] text-slate-500">Hostel patron/matron supervising dorm welfare.</p>
+              <div className="space-y-4 border-l border-slate-200 pl-6">
+                <p className="font-bold text-slate-900">Headmaster Approval & School Stamp:</p>
+                <div className="h-12 border-2 border-dashed border-slate-300 rounded-xl grid place-items-center text-slate-400 font-bold text-[11px]">
+                  [ OFFICIAL SCHOOL STAMP HERE ]
+                </div>
+                <div className="flex items-center justify-between pt-2 text-[11px]">
+                  <span>Headmaster: Tr. Joseph Kassim</span>
+                  <span>Date: 01/09/2026</span>
+                </div>
               </div>
             </div>
           </div>
+        )}
 
-          {/* Bio Data & Guardian Info */}
-          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 shadow-xs">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
-              <User className="w-4 h-4 text-sky-600" /> Parent, Bio & Medical Ledger
-            </h3>
+        {/* TAB 2: CUMULATIVE TIMELINE (2024 - 2026) */}
+        {dossierTab === 'timeline' && (
+          <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs">
+            <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div>
+                <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-sky-600" /> Student Progression Timeline (2024 - 2026)
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Complete milestone history from admission day to current grade.
+                </p>
+              </div>
+            </div>
 
-            <div className="space-y-3 text-slate-700 font-medium">
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-500">Primary Guardian:</span>
-                <strong className="text-slate-900">{viewingStudent.guardian_name || 'Juma Mkwawa'}</strong>
+            <div className="grid md:grid-cols-3 gap-4 text-xs">
+              <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="bg-slate-900 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">2024 (Form I)</span>
+                  <span className="font-black text-slate-700">Initial Admission</span>
+                </div>
+                <p className="font-extrabold text-slate-900 text-xs pt-1">Enrollment & Form I Stage</p>
+                <ul className="space-y-1.5 text-slate-600 font-medium text-[11px]">
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Admitted on: {viewingStudent.admission_date || '10th Jan 2024'}</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Form I Terminal Exam: 82.4% (Grade A)</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Conduct: Excellent Discipline</li>
+                </ul>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-500">Guardian Phone:</span>
-                <strong className="text-sky-700">{viewingStudent.guardian_phone || '+255 784 112 233'}</strong>
+
+              <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <span className="bg-slate-900 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">2025 (Form II)</span>
+                  <span className="font-black text-slate-700">FTNA National Exam</span>
+                </div>
+                <p className="font-extrabold text-slate-900 text-xs pt-1">Hostel Allocation & FTNA</p>
+                <ul className="space-y-1.5 text-slate-600 font-medium text-[11px]">
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Hostel Assigned: {viewingStudent.hostel_name || 'Kilimanjaro Hostel'}</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> FTNA National Exam: Division I (8 Points)</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Promoted to Form III Science</li>
+                </ul>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-500">Date of Birth:</span>
-                <strong className="text-slate-900">{viewingStudent.date_of_birth || '15th March 2010'} ({calculateAge(viewingStudent.date_of_birth)})</strong>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-500">Religion & Uraia:</span>
-                <strong className="text-slate-900">{viewingStudent.religion || 'Christianity'} • {viewingStudent.nationality || 'Tanzanian'}</strong>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-500">Blood Group:</span>
-                <strong className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded font-black">{viewingStudent.blood_group || 'O+'}</strong>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-slate-500">Previous School:</span>
-                <strong className="text-slate-900">{viewingStudent.previous_school || 'Mwenge Primary School'}</strong>
+
+              <div className="bg-sky-50 border border-sky-200 p-5 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between border-b border-sky-200 pb-2">
+                  <span className="bg-sky-600 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Current 2026</span>
+                  <span className="font-black text-sky-950">Form III Stage</span>
+                </div>
+                <p className="font-extrabold text-slate-900 text-xs pt-1">Term II Evaluation</p>
+                <ul className="space-y-1.5 text-slate-700 font-medium text-[11px]">
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Class Teacher: {viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Class Monitor: {viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</li>
+                  <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Current Term Avg: 85.8% (Rank #3 / 45)</li>
+                </ul>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* TAB 3: ATTENDANCE, HOSTEL & DISCIPLINE */}
+        {dossierTab === 'attendance' && (
+          <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs text-xs">
+            <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Home className="w-4 h-4 text-purple-600" /> Attendance Rate, Boarding & Conduct Log
+            </h3>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl space-y-2">
+                <span className="text-emerald-800 font-bold uppercase text-[10px]">Attendance Performance</span>
+                <p className="text-2xl font-black text-emerald-950">98.3% Attendance Rate</p>
+                <p className="text-[11px] text-emerald-700 font-medium">Attended 118 out of 120 school sessions. 2 excused sick days.</p>
+              </div>
+
+              <div className="bg-purple-50 border border-purple-200 p-5 rounded-2xl space-y-2">
+                <span className="text-purple-800 font-bold uppercase text-[10px]">Hostel Allocation</span>
+                <p className="text-lg font-black text-slate-900">{viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)'}</p>
+                <p className="text-[11px] text-purple-800 font-medium">Hostel Master: {viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro'}</p>
+              </div>
+
+              <div className="bg-sky-50 border border-sky-200 p-5 rounded-2xl space-y-2">
+                <span className="text-sky-800 font-bold uppercase text-[10px]">Disciplinary Rating</span>
+                <p className="text-lg font-black text-slate-900">Conduct: A (Very Good)</p>
+                <p className="text-[11px] text-sky-800 font-medium">Zero disciplinary warnings recorded on student file.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: FEE LEDGER & TRANSACTIONS */}
+        {dossierTab === 'fees' && (
+          <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs text-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-amber-600" /> Student Fee Invoices & Payment Ledger
+              </h3>
+              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">
+                Balance: TZS 150,000
+              </span>
+            </div>
+
+            <div className="border border-slate-200 rounded-2xl overflow-hidden">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-600 font-black text-[10px] uppercase border-b border-slate-200">
+                    <th className="p-3">Receipt No</th>
+                    <th className="p-3">Description</th>
+                    <th className="p-3">Payment Channel</th>
+                    <th className="p-3">Reference No</th>
+                    <th className="p-3">Date</th>
+                    <th className="p-3 text-right">Amount Paid</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                  <tr>
+                    <td className="p-3 font-mono font-bold text-slate-900">REC-88401</td>
+                    <td className="p-3">Term II Boarding & Tuition Fee</td>
+                    <td className="p-3">M-Pesa Mobile Money</td>
+                    <td className="p-3 font-mono">MPESA-TX99281</td>
+                    <td className="p-3">2026-08-25</td>
+                    <td className="p-3 text-right font-black text-emerald-700">TZS 350,000</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-mono font-bold text-slate-900">REC-88403</td>
+                    <td className="p-3">Term I Tuition Deposit</td>
+                    <td className="p-3">CRDB Bank Deposit</td>
+                    <td className="p-3 font-mono">CRDB-DEP-4401</td>
+                    <td className="p-3">2026-08-10</td>
+                    <td className="p-3 text-right font-black text-emerald-700">TZS 350,000</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: BIO DATA & GUARDIAN */}
+        {dossierTab === 'bio' && (
+          <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs text-xs">
+            <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
+              <User className="w-4 h-4 text-blue-600" /> Bio Data & Emergency Guardian Contacts
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                <h4 className="font-extrabold text-slate-900 text-xs border-b border-slate-200 pb-2">Student Personal Bio</h4>
+                <div className="space-y-2 text-slate-700 font-medium">
+                  <p><strong className="text-slate-900">Full Name:</strong> {studentFullName}</p>
+                  <p><strong className="text-slate-900">Date of Birth:</strong> {viewingStudent.date_of_birth || '15th March 2010'} ({calculateAge(viewingStudent.date_of_birth)})</p>
+                  <p><strong className="text-slate-900">Gender:</strong> <span className="capitalize">{viewingStudent.gender}</span></p>
+                  <p><strong className="text-slate-900">Religion:</strong> {viewingStudent.religion || 'Christianity'}</p>
+                  <p><strong className="text-slate-900">Blood Group:</strong> {viewingStudent.blood_group || 'O+'}</p>
+                  <p><strong className="text-slate-900">Medical Notes:</strong> {viewingStudent.medical_notes || 'No known allergies'}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 bg-sky-50/70 p-5 rounded-2xl border border-sky-200">
+                <h4 className="font-extrabold text-sky-950 text-xs border-b border-sky-200 pb-2">Parent & Guardian Contact</h4>
+                <div className="space-y-2 text-slate-700 font-medium">
+                  <p><strong className="text-slate-900">Primary Guardian:</strong> {viewingStudent.guardian_name || 'Juma Mkwawa'}</p>
+                  <p><strong className="text-slate-900">Phone Number:</strong> {viewingStudent.guardian_phone || '+255 784 112 233'}</p>
+                  <p><strong className="text-slate-900">Class Teacher:</strong> {viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</p>
+                  <p><strong className="text-slate-900">Class Monitor:</strong> {viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -823,9 +963,10 @@ export const StudentDirectory: React.FC = () => {
                           <button
                             onClick={() => {
                               setViewingStudent(student);
+                              setDossierTab('necta_report');
                             }}
                             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 text-[11px] font-bold transition-all"
-                            title="Open Full Student File & History Page"
+                            title="Open Full Student File & NECTA Report"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>View Full Profile</span>
