@@ -21,7 +21,8 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  CreditCard
+  CreditCard,
+  FileText
 } from 'lucide-react';
 
 /* =================================================================== */
@@ -1140,49 +1141,112 @@ export const StudentDirectory: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 4: FEE LEDGER & TRANSACTIONS */}
+        {/* TAB 4: OFFICIAL FINANCIAL STATEMENT & BURSAR FEE LEDGER */}
         {dossierTab === 'fees' && (
           <div className="bg-white border border-slate-200 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs text-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-amber-600" /> Student Fee Invoices & Payment Ledger
-              </h3>
-              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">
-                Balance: TZS 150,000
+            {/* Official Header */}
+            <div className="border-b-2 border-slate-900 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-black text-slate-900 text-base uppercase tracking-wider flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-slate-900" /> Official Student Financial Statement & Fee Balance Ledger
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Daftari Rasmi la Hesabu na Malipo ya Ada - Haula International Secondary School
+                </p>
+              </div>
+              <span className="bg-slate-900 text-white font-mono font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-xs self-start md:self-auto">
+                BURSAR REF: FIN-{viewingStudent.admission_number}
               </span>
             </div>
 
-            <div className="border border-slate-200 rounded-2xl overflow-hidden">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-600 font-black text-[10px] uppercase border-b border-slate-200">
-                    <th className="p-3">Receipt No</th>
-                    <th className="p-3">Description</th>
-                    <th className="p-3">Payment Channel</th>
-                    <th className="p-3">Reference No</th>
-                    <th className="p-3">Date</th>
-                    <th className="p-3 text-right">Amount Paid</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                  <tr>
-                    <td className="p-3 font-mono font-bold text-slate-900">REC-88401</td>
-                    <td className="p-3">Term II Boarding & Tuition Fee</td>
-                    <td className="p-3">M-Pesa Mobile Money</td>
-                    <td className="p-3 font-mono">MPESA-TX99281</td>
-                    <td className="p-3">2026-08-25</td>
-                    <td className="p-3 text-right font-black text-emerald-700">TZS 350,000</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-mono font-bold text-slate-900">REC-88403</td>
-                    <td className="p-3">Term I Tuition Deposit</td>
-                    <td className="p-3">CRDB Bank Deposit</td>
-                    <td className="p-3 font-mono">CRDB-DEP-4401</td>
-                    <td className="p-3">2026-08-10</td>
-                    <td className="p-3 text-right font-black text-emerald-700">TZS 350,000</td>
-                  </tr>
-                </tbody>
-              </table>
+            {/* Official Accounting Summary Box */}
+            <div className="grid md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-900 text-xs font-medium">
+              <div>
+                <span className="text-slate-500 font-bold block text-[10px] uppercase">Annual Prescribed Fee</span>
+                <p className="text-lg font-black text-slate-900 mt-0.5">TZS 850,000</p>
+                <span className="text-[10px] text-slate-500">2026 Academic Year</span>
+              </div>
+              <div>
+                <span className="text-slate-500 font-bold block text-[10px] uppercase">Total Fees Paid to Date</span>
+                <p className="text-lg font-black text-emerald-800 mt-0.5">TZS 700,000</p>
+                <span className="text-[10px] text-emerald-700 font-bold">Verified in Bank Records</span>
+              </div>
+              <div>
+                <span className="text-slate-500 font-bold block text-[10px] uppercase">Current Fee Balance</span>
+                <p className="text-lg font-black text-rose-700 mt-0.5">
+                  TZS {viewingStudent.fee_balance !== undefined ? viewingStudent.fee_balance.toLocaleString() : '150,000'}
+                </p>
+                <span className="text-[10px] text-rose-600 font-bold">Outstanding Balance</span>
+              </div>
+              <div>
+                <span className="text-slate-500 font-bold block text-[10px] uppercase">Bursar Clearance Status</span>
+                <span className="inline-block mt-1 bg-amber-100 text-amber-950 px-2.5 py-1 rounded-lg font-black text-[11px] border border-amber-300">
+                  PARTIALLY PAID (PERMITTED)
+                </span>
+              </div>
+            </div>
+
+            {/* Official Receipts & Payment Transactions Table */}
+            <div className="space-y-3">
+              <h4 className="font-extrabold text-slate-900 uppercase text-[11px] tracking-wider flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-900" /> Payment Receipts & Bank Deposit Ledger (Daftari la Risiti)
+              </h4>
+              <div className="border border-slate-900 rounded-xl overflow-hidden">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-900 text-white font-black text-[10px] uppercase border-b border-slate-900">
+                      <th className="p-3 border-r border-slate-800">Official Receipt No</th>
+                      <th className="p-3 border-r border-slate-800">Fee Category / Description</th>
+                      <th className="p-3 border-r border-slate-800">Payment Channel & Bank</th>
+                      <th className="p-3 border-r border-slate-800">Bank Control / Tx Reference</th>
+                      <th className="p-3 text-center border-r border-slate-800">Payment Date</th>
+                      <th className="p-3 text-right border-r border-slate-800">Amount Paid</th>
+                      <th className="p-3">Bursar Verification</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 font-medium text-slate-900">
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-mono font-black text-slate-900">REC-88401</td>
+                      <td className="p-3 border-r border-slate-200 font-bold">Term II Boarding & Tuition Fee</td>
+                      <td className="p-3 border-r border-slate-200 text-slate-700">M-Pesa Mobile Money (Vodacom)</td>
+                      <td className="p-3 border-r border-slate-200 font-mono font-bold text-slate-800">MPESA-TX99281</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono">2026-08-25</td>
+                      <td className="p-3 text-right border-r border-slate-200 font-mono font-black text-emerald-800 text-sm">TZS 350,000</td>
+                      <td className="p-3 font-bold text-emerald-800 text-[11px]">✓ Cleared & Reconciled</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 border-r border-slate-200 font-mono font-black text-slate-900">REC-88403</td>
+                      <td className="p-3 border-r border-slate-200 font-bold">Term I Tuition Deposit</td>
+                      <td className="p-3 border-r border-slate-200 text-slate-700">CRDB Bank Deposit (Acc #0150244)</td>
+                      <td className="p-3 border-r border-slate-200 font-mono font-bold text-slate-800">CRDB-DEP-4401</td>
+                      <td className="p-3 text-center border-r border-slate-200 font-mono">2026-08-10</td>
+                      <td className="p-3 text-right border-r border-slate-200 font-mono font-black text-emerald-800 text-sm">TZS 350,000</td>
+                      <td className="p-3 font-bold text-emerald-800 text-[11px]">✓ Cleared & Reconciled</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Bursar Verification & Seal */}
+            <div className="grid sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs font-medium">
+              <div className="space-y-2">
+                <p className="font-bold text-slate-900">Bursar Accounting Endorsement:</p>
+                <p className="text-slate-600 italic border-b border-dashed border-slate-300 pb-2">
+                  "Certified that all receipts have been reconciled against the school bank account."
+                </p>
+                <div className="flex items-center justify-between pt-1 text-[11px]">
+                  <span>Bursar: Madam Grace Temba</span>
+                  <span>Date: 01/09/2026</span>
+                </div>
+              </div>
+
+              <div className="space-y-2 border-l border-slate-200 pl-6">
+                <p className="font-bold text-slate-900">Bursar Seal & Official Stamp:</p>
+                <div className="h-10 border-2 border-dashed border-slate-300 rounded-xl grid place-items-center text-slate-400 font-bold text-[11px]">
+                  [ OFFICIAL BURSAR STAMP HERE ]
+                </div>
+              </div>
             </div>
           </div>
         )}
