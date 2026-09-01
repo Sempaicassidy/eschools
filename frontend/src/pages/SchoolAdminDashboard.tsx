@@ -73,7 +73,10 @@ export const SchoolAdminDashboard: React.FC = () => {
   ];
 
   return <div className="space-y-6">
-    <div className="rounded-3xl bg-gradient-to-r from-sky-800 to-blue-950 p-7 text-white shadow-lg"><p className="text-xs font-bold uppercase tracking-widest text-sky-200">Administration</p><h1 className="mt-2 text-3xl font-black">School Control Centre</h1><p className="mt-2 text-sm text-sky-100">Manage the school profile, system accounts, and core setup.</p></div>
+    <div className="border-b border-slate-200/80 pb-4">
+      <h1 className="text-2xl font-black text-slate-900 tracking-tight">School Control Centre</h1>
+      <p className="text-xs text-slate-500 font-medium mt-0.5">Manage school profile, system accounts, and core academic setup.</p>
+    </div>
     {notice && <button onClick={() => setNotice(null)} className="w-full rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-left text-sm font-medium text-sky-800">{notice}</button>}
     <div className="grid gap-4 md:grid-cols-3">{cards.map(({ label, value, icon: Icon, color }) => <div key={label} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</span><span className={`rounded-xl p-3 ${color}`}><Icon className="h-5 w-5" /></span></div><p className="mt-5 text-3xl font-black text-slate-900">{value}</p></div>)}</div>
     <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">

@@ -242,41 +242,26 @@ export const StudentDirectory: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Banner customized by Role */}
-      <div className={`rounded-3xl p-7 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 ${
-        isAdmin
-          ? 'bg-gradient-to-r from-slate-900 via-blue-950 to-sky-950'
-          : 'bg-gradient-to-r from-sky-900 via-blue-900 to-indigo-950'
-      }`}>
+      {/* Clean Page Title Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
         <div>
-          <div className="flex items-center gap-2 text-sky-300 font-bold text-xs uppercase tracking-widest">
-            {isAdmin ? <ShieldCheck className="w-4 h-4 text-emerald-400" /> : <GraduationCap className="w-4 h-4 text-sky-300" />}
-            <span>{isAdmin ? 'School Executive Governance' : 'Admission & Registration Desk'}</span>
-          </div>
-          <h1 className="text-3xl font-black mt-1">
-            {isAdmin ? 'Student Enrollment & Governance' : 'Student Admissions Directory'}
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+            {isAdmin ? 'Student Directory & Governance' : 'Student Admissions Directory'}
           </h1>
-          <p className="text-sm text-sky-100/90 mt-1 max-w-xl">
+          <p className="text-xs text-slate-500 font-medium mt-0.5">
             {isAdmin
-              ? 'Executive oversight of school enrollment, transfer approvals, disciplinary suspensions, and graduation records.'
-              : 'Register new students, update bio-data, manage guardian phone contacts, and issue admission documents.'}
+              ? 'Manage student records, class placements, and executive approvals.'
+              : 'Register new students, update bio-data, and manage parent contacts.'}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Action button tailored to Role */}
-          <button
-            onClick={() => setShowAddModal(true)}
-            className={`flex items-center gap-2 font-black px-5 py-3 rounded-2xl text-xs shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 ${
-              isAdmissionOfficer
-                ? 'bg-sky-500 hover:bg-sky-400 text-white shadow-sky-500/30'
-                : 'bg-white text-slate-900 hover:bg-slate-100 shadow-white/20'
-            }`}
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>{isAdmissionOfficer ? 'Register New Student' : 'Add Student Record'}</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-xs transition-all self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>{isAdmissionOfficer ? 'Register New Student' : 'Add Student Record'}</span>
+        </button>
       </div>
 
       {/* Notice Banner */}
