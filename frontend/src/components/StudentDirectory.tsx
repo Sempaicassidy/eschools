@@ -23,6 +23,9 @@ import {
   HeartPulse,
   UserCog,
   Home,
+  ArrowLeft,
+  Clock,
+  TrendingUp,
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
@@ -103,11 +106,10 @@ export const StudentDirectory: React.FC = () => {
   const [selectedBoarding, setSelectedBoarding] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
-  // Modals
+  // Modals & Full Page View State
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
-  const [activeProfileTab, setActiveProfileTab] = useState<'overview' | 'academic' | 'residency' | 'marks' | 'guardian'>('overview');
   const [governanceStudent, setGovernanceStudent] = useState<StudentItem | null>(null);
   const [governanceAction, setGovernanceAction] = useState<'transfer' | 'suspend' | 'graduate'>('transfer');
   const [governanceReason, setGovernanceReason] = useState<string>('');
@@ -279,6 +281,318 @@ export const StudentDirectory: React.FC = () => {
 
   const inputStyle = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all font-medium";
 
+  /* =================================================================== */
+  /* DEDICATED FULL-PAGE VIEW: CUMULATIVE STUDENT TIMELINE & FILE       */
+  /* =================================================================== */
+  if (viewingStudent) {
+    const studentFullName = `${viewingStudent.first_name} ${viewingStudent.middle_name || ''} ${viewingStudent.last_name}`;
+
+    return (
+      <div className="space-y-6">
+        {/* Full-Page Top Navigation Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setViewingStudent(null)}
+              className="flex items-center gap-2 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all shadow-xs"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Student Directory</span>
+            </button>
+
+            <div>
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+                Student Cumulative Academic File & History
+              </h1>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Tracking {studentFullName}'s complete journey from admission to current stage.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-md"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print Complete Dossier File</span>
+            </button>
+            <button
+              onClick={() => {
+                setEditingStudent(viewingStudent);
+              }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
+            >
+              <Pencil className="w-4 h-4" />
+              <span>Edit Student Bio</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 1. Student Hero Profile Banner */}
+        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden space-y-6">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 relative z-10">
+            <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+              {/* Photo / Avatar */}
+              <div className={`w-24 h-24 md:w-28 md:h-28 rounded-3xl flex items-center justify-center font-black text-4xl text-white shadow-2xl border-4 border-white/20 shrink-0 ${
+                viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-500 to-blue-600' : 'bg-gradient-to-tr from-rose-500 to-pink-600'
+              }`}>
+                {viewingStudent.photo ? (
+                  <img src={viewingStudent.photo} alt={viewingStudent.first_name} className="w-full h-full object-cover rounded-3xl" />
+                ) : (
+                  viewingStudent.first_name.charAt(0)
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                  <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">{studentFullName}</h2>
+                  <span className={`px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider ${
+                    viewingStudent.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300'
+                  }`}>
+                    {viewingStudent.status}
+                  </span>
+                </div>
+
+                <p className="text-sky-300 font-mono text-xs font-bold">
+                  ADMISSION NO: {viewingStudent.admission_number}
+                </p>
+
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1 text-xs">
+                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-sky-200">
+                    Class: {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A
+                  </span>
+                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-indigo-200 capitalize">
+                    Residency: {viewingStudent.boarding_status}
+                  </span>
+                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-emerald-200">
+                    Age: {calculateAge(viewingStudent.date_of_birth)}
+                  </span>
+                  <span className="bg-white/10 backdrop-blur-xs px-3 py-1 rounded-xl font-bold text-rose-200">
+                    Blood Group: {viewingStudent.blood_group || 'O+'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Balance Status */}
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 text-right font-medium text-xs min-w-[200px]">
+              <span className="text-slate-300 block text-[10px] uppercase font-bold">Fee Status Ledger</span>
+              <p className="text-xl font-black text-emerald-400 mt-1">
+                TZS {viewingStudent.fee_balance !== undefined ? viewingStudent.fee_balance.toLocaleString() : '150,000'}
+              </p>
+              <span className="text-[11px] text-slate-300 mt-1 block">Current Term Balance</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Visual Academic Progression Timeline (Tangu Alipoanza Shule mpaka Sasa) */}
+        <div className="bg-white border border-slate-200/80 p-6 md:p-8 rounded-3xl space-y-6 shadow-xs">
+          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <div>
+              <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                <Clock className="w-4 h-4 text-sky-600" /> Student Progression Timeline (Academic Journey)
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Complete progression milestone history from enrollment day to current grade.
+              </p>
+            </div>
+            <span className="bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full text-xs font-black">
+              Enrolled Since: {viewingStudent.admission_date || '10th Jan 2024'}
+            </span>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4 text-xs">
+            {/* Stage 1: Form I (2024) */}
+            <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl space-y-2 relative">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="bg-slate-900 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Year 1 (2024)</span>
+                <span className="font-black text-slate-700">Form I Stage</span>
+              </div>
+              <p className="font-extrabold text-slate-900 text-xs pt-1">Initial Admission & Orientation</p>
+              <ul className="space-y-1.5 text-slate-600 font-medium text-[11px]">
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Admission Number Assigned: {viewingStudent.admission_number}</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Form I Terminal Exam Avg: 82.4% (Grade A)</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Conduct: Excellent Discipline</li>
+              </ul>
+            </div>
+
+            {/* Stage 2: Form II (2025) */}
+            <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl space-y-2 relative">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="bg-slate-900 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Year 2 (2025)</span>
+                <span className="font-black text-slate-700">Form II Stage</span>
+              </div>
+              <p className="font-extrabold text-slate-900 text-xs pt-1">National FTNA Assessment & Boarding</p>
+              <ul className="space-y-1.5 text-slate-600 font-medium text-[11px]">
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Allocated to: {viewingStudent.hostel_name || 'Kilimanjaro Hostel'}</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> National FTNA Exam: Division I (8 Points)</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Promoted to Form III Science Stream</li>
+              </ul>
+            </div>
+
+            {/* Stage 3: Current Stage (2026) */}
+            <div className="bg-sky-50/70 border border-sky-200 p-5 rounded-2xl space-y-2 relative">
+              <div className="flex items-center justify-between border-b border-sky-200 pb-2">
+                <span className="bg-sky-600 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]">Current (2026)</span>
+                <span className="font-black text-sky-950">Form III Current Stage</span>
+              </div>
+              <p className="font-extrabold text-slate-900 text-xs pt-1">Term II Academic Evaluation</p>
+              <ul className="space-y-1.5 text-slate-700 font-medium text-[11px]">
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Class Teacher: {viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Class Monitor: {viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</li>
+                <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-sky-600" /> Current Term Avg: 85.9% (Rank #3 / 45)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Comprehensive All Subjects & Multi-Test Results Matrix */}
+        <div className="bg-white border border-slate-200/80 p-6 md:p-8 rounded-3xl space-y-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                <Award className="w-4 h-4 text-emerald-600" /> Comprehensive Academic Progress & All Test Results Matrix
+              </h3>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Full subject scores across Monthly Assessments (Test 1), Mid-Term, and Terminal Exams.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">
+                Division I (7 Points)
+              </span>
+              <span className="bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full text-xs font-black">
+                Rank: #3 / 45 (Avg: 85.9%)
+              </span>
+            </div>
+          </div>
+
+          <div className="border border-slate-200/80 rounded-2xl overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50/90 text-slate-600 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-200">
+                  <th className="p-3.5 px-4">Subject Name</th>
+                  <th className="p-3.5 px-4 text-center">Test 1 (20%)</th>
+                  <th className="p-3.5 px-4 text-center">Mid-Term (20%)</th>
+                  <th className="p-3.5 px-4 text-center">Terminal (60%)</th>
+                  <th className="p-3.5 px-4 text-center">Term Avg & Grade</th>
+                  <th className="p-3.5 px-4 text-center">Progress Trend</th>
+                  <th className="p-3.5 px-4">Teacher Remarks</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                {[
+                  { id: 1, subject: 'Basic Mathematics', t1: 85, mid: 88, term: 91, avg: 88.9, grade: 'A', trend: '+3.2%', remarks: 'Outstanding logical reasoning & algebra' },
+                  { id: 2, subject: 'Physics', t1: 76, mid: 81, term: 80, avg: 79.4, grade: 'A', trend: '+4.0%', remarks: 'Strong in mechanics & optics calculations' },
+                  { id: 3, subject: 'Chemistry', t1: 70, mid: 72, term: 75, avg: 73.4, grade: 'B', trend: '+2.5%', remarks: 'Good effort in organic chemistry balance' },
+                  { id: 4, subject: 'Biology', t1: 82, mid: 85, term: 88, avg: 86.2, grade: 'A', trend: '+3.0%', remarks: 'Excellent cell structure drawings & practicals' },
+                  { id: 5, subject: 'English Language', t1: 89, mid: 92, term: 93, avg: 92.0, grade: 'A', trend: '+1.5%', remarks: 'High fluency, vocabulary & comprehension' },
+                  { id: 6, subject: 'Kiswahili', t1: 80, mid: 83, term: 86, avg: 84.2, grade: 'A', trend: '+3.0%', remarks: 'Ushahidi wa kipekee katika uchanganuzi wa fasihi' },
+                  { id: 7, subject: 'Geography', t1: 78, mid: 80, term: 82, avg: 80.8, grade: 'A', trend: '+2.0%', remarks: 'Good map work, contours & climate analysis' },
+                  { id: 8, subject: 'History', t1: 84, mid: 87, term: 89, avg: 87.6, grade: 'A', trend: '+2.3%', remarks: 'Strong historical recall & essay structure' },
+                  { id: 9, subject: 'Civics', t1: 88, mid: 90, term: 92, avg: 90.8, grade: 'A', trend: '+2.0%', remarks: 'Deep understanding of constitutional rights' },
+                  { id: 10, subject: 'Computer Studies (ICS)', t1: 90, mid: 94, term: 96, avg: 94.4, grade: 'A', trend: '+2.6%', remarks: 'Top programmer & computer logic in class' },
+                ].map((sub) => (
+                  <tr key={sub.id} className="hover:bg-sky-50/30 transition-all">
+                    <td className="p-3.5 px-4 font-extrabold text-slate-900">{sub.subject}</td>
+                    <td className="p-3.5 px-4 text-center font-mono font-bold text-slate-700">{sub.t1}%</td>
+                    <td className="p-3.5 px-4 text-center font-mono font-bold text-slate-700">{sub.mid}%</td>
+                    <td className="p-3.5 px-4 text-center font-mono font-bold text-slate-700">{sub.term}%</td>
+                    <td className="p-3.5 px-4 text-center">
+                      <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-lg font-black text-xs">
+                        {sub.avg}% ({sub.grade})
+                      </span>
+                    </td>
+                    <td className="p-3.5 px-4 text-center font-extrabold text-emerald-600 text-xs">
+                      {sub.trend}
+                    </td>
+                    <td className="p-3.5 px-4 text-slate-500 font-medium text-xs">{sub.remarks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* 4. Governance, Hostel & Guardian Details Grid */}
+        <div className="grid md:grid-cols-2 gap-6 text-xs">
+          {/* Class & Hostel Leadership */}
+          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 shadow-xs">
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+              <UserCog className="w-4 h-4 text-indigo-600" /> Class & Hostel Governance Supervision
+            </h3>
+
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="bg-sky-50/70 border border-sky-100 p-4 rounded-2xl space-y-1">
+                <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wider block">Mwalimu wa Darasa (Class Teacher)</span>
+                <p className="font-black text-slate-900 text-sm">{viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</p>
+                <p className="text-[11px] text-slate-500">Academic supervisor for {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'}.</p>
+              </div>
+
+              <div className="bg-indigo-50/70 border border-indigo-100 p-4 rounded-2xl space-y-1">
+                <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Monita wa Darasa (Class Prefect)</span>
+                <p className="font-black text-slate-900 text-sm">{viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</p>
+                <p className="text-[11px] text-slate-500">Prefect in charge of class discipline & logbook.</p>
+              </div>
+
+              <div className="bg-purple-50/70 border border-purple-100 p-4 rounded-2xl space-y-1">
+                <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">Bweni la Mwanafunzi (Hostel)</span>
+                <p className="font-black text-slate-900 text-sm">{viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)'}</p>
+                <p className="text-[11px] text-slate-500">Dormitory block for boarding scholars.</p>
+              </div>
+
+              <div className="bg-pink-50/70 border border-pink-100 p-4 rounded-2xl space-y-1">
+                <span className="text-[10px] font-bold text-pink-700 uppercase tracking-wider block">Mwalimu Msimamizi wa Bweni</span>
+                <p className="font-black text-slate-900 text-sm">{viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro'}</p>
+                <p className="text-[11px] text-slate-500">Hostel patron/matron supervising dorm welfare.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bio Data & Guardian Info */}
+          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 shadow-xs">
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+              <User className="w-4 h-4 text-sky-600" /> Parent, Bio & Medical Ledger
+            </h3>
+
+            <div className="space-y-3 text-slate-700 font-medium">
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-500">Primary Guardian:</span>
+                <strong className="text-slate-900">{viewingStudent.guardian_name || 'Juma Mkwawa'}</strong>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-500">Guardian Phone:</span>
+                <strong className="text-sky-700">{viewingStudent.guardian_phone || '+255 784 112 233'}</strong>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-500">Date of Birth:</span>
+                <strong className="text-slate-900">{viewingStudent.date_of_birth || '15th March 2010'} ({calculateAge(viewingStudent.date_of_birth)})</strong>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-500">Religion & Uraia:</span>
+                <strong className="text-slate-900">{viewingStudent.religion || 'Christianity'} • {viewingStudent.nationality || 'Tanzanian'}</strong>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-100">
+                <span className="text-slate-500">Blood Group:</span>
+                <strong className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded font-black">{viewingStudent.blood_group || 'O+'}</strong>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-slate-500">Previous School:</span>
+                <strong className="text-slate-900">{viewingStudent.previous_school || 'Mwenge Primary School'}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* =================================================================== */
+  /* STANDARD DIRECTORY LISTING VIEW                                     */
+  /* =================================================================== */
   return (
     <div className="space-y-6">
       {/* Clean Page Title Header */}
@@ -505,14 +819,13 @@ export const StudentDirectory: React.FC = () => {
 
                       <td className="py-3.5 px-6 text-right">
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* View Complete Student Dossier */}
+                          {/* View Complete Student Dossier Page */}
                           <button
                             onClick={() => {
                               setViewingStudent(student);
-                              setActiveProfileTab('overview');
                             }}
                             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 text-[11px] font-bold transition-all"
-                            title="View Full Student Dossier"
+                            title="Open Full Student File & History Page"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>View Full Profile</span>
@@ -751,284 +1064,7 @@ export const StudentDirectory: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 2: BREATHTAKING EXECUTIVE STUDENT DOSSIER PROFILE */}
-      {viewingStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-3 md:p-6 overflow-y-auto">
-          <div className="w-full max-w-5xl bg-white rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 my-auto border border-slate-200">
-            {/* Dossier Header Bar */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-sky-50 text-sky-700 rounded-2xl">
-                  <FileText className="w-6 h-6" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Student Academic Dossier & Profile</h2>
-                  <p className="text-xs text-slate-500 font-medium">Official student file and comprehensive school record.</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => window.print()}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span className="hidden sm:inline">Print Student File</span>
-                </button>
-                <button
-                  onClick={() => setViewingStudent(null)}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-
-            {/* 2-Column Executive Dossier Grid */}
-            <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-6 text-xs">
-              
-              {/* LEFT COLUMN: STUDENT ID CARD & BIO STATS */}
-              <div className="space-y-5">
-                {/* ID Badge Card */}
-                <div className="bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden space-y-4">
-                  <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-                    <GraduationCap className="w-32 h-32 text-white" />
-                  </div>
-
-                  <div className="flex flex-col items-center text-center space-y-3">
-                    {/* Photo with Glowing Ring */}
-                    <div className="relative">
-                      <div className={`w-24 h-24 rounded-3xl flex items-center justify-center font-black text-3xl text-white shadow-2xl border-4 border-white/20 ${
-                        viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-500 to-blue-600' : 'bg-gradient-to-tr from-rose-500 to-pink-600'
-                      }`}>
-                        {viewingStudent.photo ? (
-                          <img src={viewingStudent.photo} alt={viewingStudent.first_name} className="w-full h-full object-cover rounded-3xl" />
-                        ) : (
-                          viewingStudent.first_name.charAt(0)
-                        )}
-                      </div>
-                      <span className={`absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow-md ${
-                        viewingStudent.status === 'active' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
-                      }`}>
-                        {viewingStudent.status}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-black tracking-tight leading-snug text-white">
-                        {viewingStudent.first_name} {viewingStudent.middle_name || ''} {viewingStudent.last_name}
-                      </h3>
-                      <p className="text-sky-300 font-mono text-xs mt-0.5 font-bold">
-                        ADM: {viewingStudent.admission_number}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
-                      <span className="bg-white/10 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[11px] font-bold text-sky-200">
-                        {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A
-                      </span>
-                      <span className="bg-white/10 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[11px] font-bold text-indigo-200 capitalize">
-                        {viewingStudent.boarding_status}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-white/10 pt-4 grid grid-cols-2 gap-2 text-center text-[11px]">
-                    <div className="bg-white/5 p-2 rounded-xl">
-                      <span className="text-slate-400 block text-[10px]">Age</span>
-                      <span className="font-bold text-white">{calculateAge(viewingStudent.date_of_birth)}</span>
-                    </div>
-                    <div className="bg-white/5 p-2 rounded-xl">
-                      <span className="text-slate-400 block text-[10px]">Gender</span>
-                      <span className="font-bold text-white capitalize">{viewingStudent.gender}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Personal & Bio Details Card */}
-                <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-3xl space-y-3">
-                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
-                    <User className="w-4 h-4 text-sky-600" /> Bio Data & Health Info
-                  </h4>
-                  <div className="space-y-2 text-slate-700 font-medium">
-                    <div className="flex justify-between py-1 border-b border-slate-100">
-                      <span className="text-slate-500">Date of Birth:</span>
-                      <strong className="text-slate-900">{viewingStudent.date_of_birth || '15th March 2010'}</strong>
-                    </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
-                      <span className="text-slate-500">Religion:</span>
-                      <strong className="text-slate-900">{viewingStudent.religion || 'Christianity'}</strong>
-                    </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
-                      <span className="text-slate-500">Nationality:</span>
-                      <strong className="text-slate-900">{viewingStudent.nationality || 'Tanzanian'}</strong>
-                    </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100">
-                      <span className="text-slate-500">Blood Group:</span>
-                      <strong className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded font-black">{viewingStudent.blood_group || 'O+'}</strong>
-                    </div>
-                    <div className="flex justify-between py-1">
-                      <span className="text-slate-500">Previous School:</span>
-                      <strong className="text-slate-900">{viewingStudent.previous_school || 'Mwenge Primary School'}</strong>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Guardian Quick Call Box */}
-                <div className="bg-sky-50/70 border border-sky-200 p-5 rounded-3xl space-y-2">
-                  <span className="text-sky-800 font-bold text-xs uppercase tracking-wider block">Parent & Guardian Contact</span>
-                  <p className="text-base font-black text-slate-900">{viewingStudent.guardian_name || 'Juma Mkwawa'}</p>
-                  <p className="text-xs text-sky-800 font-bold flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-sky-600" />
-                    <span>{viewingStudent.guardian_phone || '+255 784 112 233'}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* RIGHT COLUMN: COMPLETE ACADEMIC & HOSTEL DOSSIER */}
-              <div className="space-y-5">
-                
-                {/* Academic Leadership Grid (Class Teacher & Class Monitor) */}
-                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-3 shadow-xs">
-                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
-                    <UserCog className="w-4 h-4 text-indigo-600" /> Academic & Class Governance
-                  </h4>
-                  
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {/* Class Teacher */}
-                    <div className="bg-sky-50/60 border border-sky-100 p-3.5 rounded-2xl space-y-1">
-                      <span className="text-[10px] font-bold text-sky-700 uppercase tracking-wider block">Mwalimu wa Darasa (Class Teacher)</span>
-                      <p className="font-black text-slate-900 text-sm">{viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}</p>
-                      <p className="text-[11px] text-slate-500 font-medium">Class supervisor & academic mentor for {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'}.</p>
-                    </div>
-
-                    {/* Class Monitor */}
-                    <div className="bg-indigo-50/60 border border-indigo-100 p-3.5 rounded-2xl space-y-1">
-                      <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider block">Monita wa Darasa (Class Prefect)</span>
-                      <p className="font-black text-slate-900 text-sm">{viewingStudent.class_monitor_name || 'Josephat K. Mwita'}</p>
-                      <p className="text-[11px] text-slate-500 font-medium">Student prefect in charge of daily logbook and class order.</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Residency & Hostel Governance Grid */}
-                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-3 shadow-xs">
-                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
-                    <Home className="w-4 h-4 text-purple-600" /> Boarding & Hostel Accommodation
-                  </h4>
-
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {/* Hostel Name */}
-                    <div className="bg-purple-50/60 border border-purple-100 p-3.5 rounded-2xl space-y-1">
-                      <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">Bweni la Mwanafunzi (Hostel)</span>
-                      <p className="font-black text-slate-900 text-sm">
-                        {viewingStudent.boarding_status === 'boarding'
-                          ? (viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B)')
-                          : 'Day Scholar (No Hostel Allocated)'}
-                      </p>
-                      <p className="text-[11px] text-slate-500 font-medium">Assigned residential room for prep & sleeping.</p>
-                    </div>
-
-                    {/* Hostel Master */}
-                    <div className="bg-pink-50/60 border border-pink-100 p-3.5 rounded-2xl space-y-1">
-                      <span className="text-[10px] font-bold text-pink-700 uppercase tracking-wider block">Mwalimu Msimamizi wa Bweni</span>
-                      <p className="font-black text-slate-900 text-sm">
-                        {viewingStudent.boarding_status === 'boarding'
-                          ? (viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro')
-                          : 'N/A'}
-                      </p>
-                      <p className="text-[11px] text-slate-500 font-medium">Patron/Matron in charge of dorm welfare & prep.</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Comprehensive Examination Results & Multi-Test Progress Matrix */}
-                <div className="bg-white border border-slate-200/80 p-5 rounded-3xl space-y-4 shadow-xs">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                    <div>
-                      <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                        <Award className="w-4 h-4 text-emerald-600" /> Student Comprehensive Academic Progress & All Test Results
-                      </h4>
-                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                        Track progress across Continuous Assessments (Monthly Tests), Mid-Term, and Terminal Exams for all subjects.
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">
-                        Division I (7 Points)
-                      </span>
-                      <span className="bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-full text-xs font-black">
-                        Rank: #3 / 45 (Avg: 85.9%)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* All Subjects & Multi-Test Performance Matrix Table */}
-                  <div className="border border-slate-200/80 rounded-2xl overflow-x-auto">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead>
-                        <tr className="bg-slate-50/90 text-slate-600 font-extrabold text-[10px] uppercase tracking-wider border-b border-slate-200">
-                          <th className="p-3">Subject Name</th>
-                          <th className="p-3 text-center">Test 1 (20%)</th>
-                          <th className="p-3 text-center">Mid-Term (20%)</th>
-                          <th className="p-3 text-center">Terminal (60%)</th>
-                          <th className="p-3 text-center">Term Avg & Grade</th>
-                          <th className="p-3 text-center">Trend</th>
-                          <th className="p-3">Teacher Remarks</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
-                        {[
-                          { id: 1, subject: 'Basic Mathematics', t1: 85, mid: 88, term: 91, avg: 88.9, grade: 'A', trend: '+3.2%', remarks: 'Outstanding logical reasoning & algebra' },
-                          { id: 2, subject: 'Physics', t1: 76, mid: 81, term: 80, avg: 79.4, grade: 'A', trend: '+4.0%', remarks: 'Strong in mechanics & optics calculations' },
-                          { id: 3, subject: 'Chemistry', t1: 70, mid: 72, term: 75, avg: 73.4, grade: 'B', trend: '+2.5%', remarks: 'Good effort in organic chemistry balance' },
-                          { id: 4, subject: 'Biology', t1: 82, mid: 85, term: 88, avg: 86.2, grade: 'A', trend: '+3.0%', remarks: 'Excellent cell structure drawings & practicals' },
-                          { id: 5, subject: 'English Language', t1: 89, mid: 92, term: 93, avg: 92.0, grade: 'A', trend: '+1.5%', remarks: 'High fluency, vocabulary & comprehension' },
-                          { id: 6, subject: 'Kiswahili', t1: 80, mid: 83, term: 86, avg: 84.2, grade: 'A', trend: '+3.0%', remarks: 'Ushahidi wa kipekee katika uchanganuzi wa fasihi' },
-                          { id: 7, subject: 'Geography', t1: 78, mid: 80, term: 82, avg: 80.8, grade: 'A', trend: '+2.0%', remarks: 'Good map work, contours & climate analysis' },
-                          { id: 8, subject: 'History', t1: 84, mid: 87, term: 89, avg: 87.6, grade: 'A', trend: '+2.3%', remarks: 'Strong historical recall & essay structure' },
-                          { id: 9, subject: 'Civics', t1: 88, mid: 90, term: 92, avg: 90.8, grade: 'A', trend: '+2.0%', remarks: 'Deep understanding of constitutional rights' },
-                          { id: 10, subject: 'Computer Studies (ICS)', t1: 90, mid: 94, term: 96, avg: 94.4, grade: 'A', trend: '+2.6%', remarks: 'Top programmer & computer logic in class' },
-                        ].map((sub) => (
-                          <tr key={sub.id} className="hover:bg-sky-50/30 transition-all">
-                            <td className="p-3 font-extrabold text-slate-900">{sub.subject}</td>
-                            <td className="p-3 text-center font-mono font-bold text-slate-700">{sub.t1}%</td>
-                            <td className="p-3 text-center font-mono font-bold text-slate-700">{sub.mid}%</td>
-                            <td className="p-3 text-center font-mono font-bold text-slate-700">{sub.term}%</td>
-                            <td className="p-3 text-center">
-                              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-lg font-black text-[11px]">
-                                {sub.avg}% ({sub.grade})
-                              </span>
-                            </td>
-                            <td className="p-3 text-center font-extrabold text-emerald-600 text-[11px]">
-                              {sub.trend}
-                            </td>
-                            <td className="p-3 text-slate-500 font-medium text-[11px]">{sub.remarks}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Bottom Footer Close Button */}
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
-              <button
-                onClick={() => setViewingStudent(null)}
-                className="bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-2xl text-xs shadow-md transition-all"
-              >
-                Close Student File
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: ADMIN EXECUTIVE GOVERNANCE */}
+      {/* MODAL: ADMIN EXECUTIVE GOVERNANCE */}
       {governanceStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
           <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-4">
