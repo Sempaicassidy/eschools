@@ -1,8 +1,8 @@
 export type UserRole =
-  | 'super_admin'
   | 'school_admin'
   | 'headmaster'
   | 'academic_master'
+  | 'admission_officer'
   | 'teacher'
   | 'accountant'
   | 'parent'

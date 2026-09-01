@@ -13,10 +13,10 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $roles = [
-            'super_admin',
             'school_admin',
             'headmaster',
             'academic_master',
+            'admission_officer',
             'teacher',
             'accountant',
             'parent',
@@ -27,7 +27,6 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $permissions = [
-            'manage schools',
             'manage users',
             'manage students',
             'manage staff',
@@ -48,10 +47,6 @@ class RolePermissionSeeder extends Seeder
         foreach ($roles as $roleName) {
             $role = Role::firstOrCreate(['name' => $roleName]);
 
-            if ($roleName === 'super_admin') {
-                $role->syncPermissions($permissions);
-            }
-
             if ($roleName === 'school_admin') {
                 $role->syncPermissions([
                     'manage users',
@@ -60,6 +55,14 @@ class RolePermissionSeeder extends Seeder
                     'manage attendance',
                     'manage exams',
                     'manage fees',
+                    'view reports',
+                    'send announcements',
+                ]);
+            }
+
+            if ($roleName === 'admission_officer') {
+                $role->syncPermissions([
+                    'manage students',
                     'view reports',
                     'send announcements',
                 ]);

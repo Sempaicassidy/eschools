@@ -1,288 +1,85 @@
-import React, { useState } from 'react';
-import { MOCK_STUDENTS } from '../services/api';
-import { GraduationCap, Users, CalendarCheck, CreditCard, Search, UserPlus, Filter } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../services/api';
+import { Building2, GraduationCap, ShieldCheck, UserPlus, Users } from 'lucide-react';
+import { AcademicSetup } from '../components/AcademicSetup';
+
+type Stats = { students: number; staff: number; users: number };
+type Account = { id: number; name: string; email: string; phone?: string; user_type: string; is_active: boolean };
+type School = { name: string; motto?: string; phone?: string; email?: string; region?: string; district?: string; school_type: string; ownership: string };
+
+const emptyUser = { name: '', email: '', phone: '', user_type: 'teacher', password: '' };
 
 export const SchoolAdminDashboard: React.FC = () => {
-  const [students, setStudents] = useState(MOCK_STUDENTS);
-  const [showModal, setShowModal] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [admNo, setAdmNo] = useState('');
-  const [className, setClassName] = useState('Form II');
-  const [streamName, setStreamName] = useState('A');
-  const [boardingStatus, setBoardingStatus] = useState<'day' | 'boarding'>('boarding');
+  const [stats, setStats] = useState<Stats>({ students: 0, staff: 0, users: 0 });
+  const [users, setUsers] = useState<Account[]>([]);
+  const [school, setSchool] = useState<School | null>(null);
+  const [newUser, setNewUser] = useState(emptyUser);
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  const handleRegisterStudent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!firstName || !lastName || !admNo) return;
-
-    const newStudent = {
-      id: students.length + 1,
-      school_id: 1,
-      admission_number: admNo,
-      first_name: firstName,
-      middle_name: '',
-      last_name: lastName,
-      gender: 'male' as const,
-      class_name: className,
-      stream_name: streamName,
-      boarding_status: boardingStatus,
-      status: 'active' as const,
-      guardian_name: `${lastName} Guardian`,
-      guardian_phone: '+255 700 888 999',
-      fee_balance: boardingStatus === 'boarding' ? 850000 : 600000,
-    };
-
-    setStudents([newStudent, ...students]);
-    setShowModal(false);
-    setFirstName('');
-    setLastName('');
-    setAdmNo('');
+  const load = async () => {
+    const [dashboard, accounts, profile] = await Promise.all([api.get('/admin/dashboard'), api.get('/admin/users'), api.get('/school/profile')]);
+    setStats(dashboard.data.data);
+    setUsers(accounts.data.data.data);
+    setSchool(profile.data.data);
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-sky-700 via-blue-800 to-sky-900 rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight">Headmaster & School Admin Dashboard</h1>
-          <p className="text-xs text-sky-100 font-medium mt-1">Haula International Secondary School • Academic Year 2026</p>
-        </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-white hover:bg-sky-50 text-sky-900 font-extrabold text-xs px-5 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 shrink-0 border border-white"
-        >
-          <UserPlus className="w-4 h-4 text-sky-700" />
-          <span>Register New Student</span>
-        </button>
-      </div>
+  useEffect(() => { load().catch(() => setNotice('Unable to load admin data.')); }, []);
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-2xl border border-sky-100 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Enrolled Students</span>
-            <div className="p-3 rounded-xl bg-sky-50 text-sky-600">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-          </div>
-          <p className="text-3xl font-black text-slate-900 mt-4">{students.length + 846}</p>
-          <span className="text-xs text-sky-700 font-bold mt-2 block">520 Boarding • 330 Day</span>
-        </div>
+  const createUser = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      await api.post('/admin/users', newUser);
+      setNewUser(emptyUser); setShowUserForm(false); setNotice('User account created successfully.'); load();
+    } catch (error: any) { setNotice(error.response?.data?.message || 'Unable to create the account.'); }
+  };
 
-        <div className="bg-white p-6 rounded-2xl border border-sky-100 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Today's Attendance Rate</span>
-            <div className="p-3 rounded-xl bg-blue-50 text-blue-600">
-              <CalendarCheck className="w-5 h-5" />
-            </div>
-          </div>
-          <p className="text-3xl font-black text-slate-900 mt-4">94.8%</p>
-          <span className="text-xs text-emerald-600 font-bold mt-2 block">+1.2% higher than yesterday</span>
-        </div>
+  const saveSchool = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!school) return;
+    try {
+      const profileData = {
+        name: school.name,
+        motto: school.motto || '',
+        phone: school.phone || '',
+        email: school.email || '',
+        school_type: school.school_type,
+        ownership: school.ownership,
+      };
+      const request = logoFile
+        ? (() => {
+            const formData = new FormData();
+            Object.entries(profileData).forEach(([key, value]) => formData.append(key, value));
+            formData.append('logo', logoFile);
+            return api.post('/school/profile', formData, { headers: { 'Content-Type': 'multipart/form-data' }, params: { _method: 'PUT' } });
+          })()
+        : api.put('/school/profile', profileData);
+      const { data } = await request;
+      setSchool(data.data); setLogoFile(null); setNotice('School settings saved.');
+    }
+    catch (error: any) { setNotice(error.response?.data?.message || 'Unable to save school settings.'); }
+  };
 
-        <div className="bg-white p-6 rounded-2xl border border-sky-100 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Teaching Staff Count</span>
-            <div className="p-3 rounded-xl bg-indigo-50 text-indigo-600">
-              <Users className="w-5 h-5" />
-            </div>
-          </div>
-          <p className="text-3xl font-black text-slate-900 mt-4">42</p>
-          <span className="text-xs text-indigo-600 font-bold mt-2 block">All subjects assigned</span>
-        </div>
+  const toggleUser = async (user: Account) => {
+    try { await api.put(`/admin/users/${user.id}`, { is_active: !user.is_active }); setNotice(`Account ${user.is_active ? 'deactivated' : 'activated'}.`); load(); }
+    catch (error: any) { setNotice(error.response?.data?.message || 'Unable to update account.'); }
+  };
 
-        <div className="bg-white p-6 rounded-2xl border border-sky-100 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fee Collection Rate</span>
-            <div className="p-3 rounded-xl bg-amber-50 text-amber-600">
-              <CreditCard className="w-5 h-5" />
-            </div>
-          </div>
-          <p className="text-3xl font-black text-slate-900 mt-4">82.4%</p>
-          <span className="text-xs text-amber-600 font-bold mt-2 block">Term II Tuition & Boarding</span>
-        </div>
-      </div>
+  const cards = [
+    { label: 'Active students', value: stats.students, icon: GraduationCap, color: 'bg-sky-50 text-sky-700' },
+    { label: 'Active staff', value: stats.staff, icon: Users, color: 'bg-indigo-50 text-indigo-700' },
+    { label: 'System accounts', value: stats.users, icon: ShieldCheck, color: 'bg-emerald-50 text-emerald-700' },
+  ];
 
-      <div className="bg-white rounded-3xl border border-sky-100 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-sky-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h3 className="font-black text-slate-900 text-lg">Student Master Directory</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Form I - Form VI student profiles and guardians</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="w-4 h-4 text-sky-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search student or admission #..."
-                className="bg-sky-50/50 border border-sky-200 text-slate-800 text-xs pl-10 pr-4 py-2.5 rounded-xl focus:outline-none focus:border-sky-500 w-56 font-medium"
-              />
-            </div>
-            <button className="p-2.5 border border-sky-200 text-sky-700 rounded-xl hover:bg-sky-50">
-              <Filter className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-sky-50/60 text-slate-500 text-[11px] uppercase tracking-wider font-bold border-b border-sky-100">
-                <th className="py-4 px-6">Student Name</th>
-                <th className="py-4 px-6">Admission #</th>
-                <th className="py-4 px-6">Class & Stream</th>
-                <th className="py-4 px-6">Boarding Status</th>
-                <th className="py-4 px-6">Guardian Contact</th>
-                <th className="py-4 px-6">Fee Balance</th>
-                <th className="py-4 px-6 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-sky-100 text-xs font-semibold text-slate-700">
-              {students.map((student) => (
-                <tr key={student.id} className="hover:bg-sky-50/40 transition-all">
-                  <td className="py-4 px-6 font-bold text-slate-900 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-800 font-black flex items-center justify-center text-xs">
-                      {student.first_name.charAt(0)}{student.last_name.charAt(0)}
-                    </div>
-                    <span className="font-extrabold text-slate-900">{student.first_name} {student.middle_name} {student.last_name}</span>
-                  </td>
-                  <td className="py-4 px-6 font-mono font-bold text-slate-600">{student.admission_number}</td>
-                  <td className="py-4 px-6 font-extrabold text-slate-900">{student.class_name} ({student.stream_name})</td>
-                  <td className="py-4 px-6 capitalize">
-                    <span className="inline-block px-3 py-1 rounded-lg text-[11px] font-extrabold bg-sky-50 text-sky-800 border border-sky-200">
-                      {student.boarding_status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-slate-600">
-                    <p className="font-bold text-slate-900">{student.guardian_name}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">{student.guardian_phone}</p>
-                  </td>
-                  <td className="py-4 px-6 font-extrabold">
-                    {student.fee_balance === 0 ? (
-                      <span className="text-emerald-600 font-black">Cleared (0 TZS)</span>
-                    ) : (
-                      <span className="text-rose-600 font-black">TZS {student.fee_balance?.toLocaleString()}</span>
-                    )}
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <button className="text-xs font-bold text-sky-600 hover:underline">
-                      View Profile
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl border border-sky-100">
-            <h3 className="text-xl font-black text-slate-900 mb-1">Register New Student</h3>
-            <p className="text-xs text-slate-500 mb-6">Assign admission number, class, stream, and boarding type.</p>
-
-            <form onSubmit={handleRegisterStudent} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">First Name</label>
-                  <input
-                    type="text"
-                    placeholder="Baraka"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full bg-sky-50/50 border border-sky-200 text-slate-800 text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-sky-600 font-semibold"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    placeholder="Mkwawa"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full bg-sky-50/50 border border-sky-200 text-slate-800 text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-sky-600 font-semibold"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Admission Number</label>
-                <input
-                  type="text"
-                  placeholder="STD-2026-005"
-                  value={admNo}
-                  onChange={(e) => setAdmNo(e.target.value)}
-                  className="w-full bg-sky-50/50 border border-sky-200 text-slate-800 text-xs px-4 py-3 rounded-xl focus:outline-none focus:border-sky-600 font-semibold"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Class</label>
-                  <select
-                    value={className}
-                    onChange={(e) => setClassName(e.target.value)}
-                    className="w-full bg-sky-50/50 border border-sky-200 text-slate-800 text-xs px-3 py-3 rounded-xl font-bold"
-                  >
-                    <option>Form I</option>
-                    <option>Form II</option>
-                    <option>Form III</option>
-                    <option>Form IV</option>
-                    <option>Form V</option>
-                    <option>Form VI</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Stream</label>
-                  <select
-                    value={streamName}
-                    onChange={(e) => setStreamName(e.target.value)}
-                    className="w-full bg-sky-50/50 border border-sky-200 text-slate-800 text-xs px-3 py-3 rounded-xl font-bold"
-                  >
-                    <option>A</option>
-                    <option>B</option>
-                    <option>C</option>
-                    <option>Science</option>
-                    <option>Arts</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Boarding</label>
-                  <select
-                    value={boardingStatus}
-                    onChange={(e) => setBoardingStatus(e.target.value as any)}
-                    className="w-full bg-sky-50/50 border border-sky-200 text-slate-800 text-xs px-3 py-3 rounded-xl font-bold"
-                  >
-                    <option value="boarding">Boarding</option>
-                    <option value="day">Day</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-6 border-t border-sky-100">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl shadow-md"
-                >
-                  Save Student Record
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+  return <div className="space-y-6">
+    <div className="rounded-3xl bg-gradient-to-r from-sky-800 to-blue-950 p-7 text-white shadow-lg"><p className="text-xs font-bold uppercase tracking-widest text-sky-200">Administration</p><h1 className="mt-2 text-3xl font-black">School Control Centre</h1><p className="mt-2 text-sm text-sky-100">Manage the school profile, system accounts, and core setup.</p></div>
+    {notice && <button onClick={() => setNotice(null)} className="w-full rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-left text-sm font-medium text-sky-800">{notice}</button>}
+    <div className="grid gap-4 md:grid-cols-3">{cards.map(({ label, value, icon: Icon, color }) => <div key={label} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</span><span className={`rounded-xl p-3 ${color}`}><Icon className="h-5 w-5" /></span></div><p className="mt-5 text-3xl font-black text-slate-900">{value}</p></div>)}</div>
+    <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"><div className="mb-6 flex items-center gap-3"><span className="rounded-xl bg-sky-50 p-3 text-sky-700"><Building2 className="h-5 w-5" /></span><div><h2 className="font-black text-slate-900">School Settings</h2><p className="text-xs text-slate-500">These details appear on the login screen and reports.</p></div></div>{school && <form onSubmit={saveSchool} className="grid gap-4 sm:grid-cols-2"><label className="sm:col-span-2 text-xs font-bold text-slate-700">School logo<input type="file" accept="image/png,image/jpeg,image/webp" onChange={e => setLogoFile(e.target.files?.[0] || null)} className="mt-1.5 block w-full text-xs text-slate-600" /></label><label className="sm:col-span-2 text-xs font-bold text-slate-700">School name<input value={school.name} onChange={e => setSchool({ ...school, name: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" required /></label><label className="sm:col-span-2 text-xs font-bold text-slate-700">Motto<input value={school.motto || ''} onChange={e => setSchool({ ...school, motto: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" /></label><label className="text-xs font-bold text-slate-700">Phone<input value={school.phone || ''} onChange={e => setSchool({ ...school, phone: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" /></label><label className="text-xs font-bold text-slate-700">Email<input type="email" value={school.email || ''} onChange={e => setSchool({ ...school, email: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm" /></label><label className="text-xs font-bold text-slate-700">School type<select value={school.school_type} onChange={e => setSchool({ ...school, school_type: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"><option value="day">Day</option><option value="boarding">Boarding</option><option value="mixed">Mixed</option></select></label><label className="text-xs font-bold text-slate-700">Ownership<select value={school.ownership} onChange={e => setSchool({ ...school, ownership: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm"><option value="private">Private</option><option value="public">Public</option><option value="faith_based">Faith based</option><option value="ngo">NGO</option></select></label><button className="sm:col-span-2 rounded-xl bg-sky-700 px-4 py-3 text-sm font-extrabold text-white">Save school settings</button></form>}</section>
+      <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"><div className="mb-5 flex items-center justify-between"><div><h2 className="font-black text-slate-900">System Users</h2><p className="text-xs text-slate-500">Create and control staff accounts.</p></div><button onClick={() => setShowUserForm(!showUserForm)} className="flex items-center gap-2 rounded-xl bg-sky-700 px-3 py-2 text-xs font-extrabold text-white"><UserPlus className="h-4 w-4" />Add user</button></div>{showUserForm && <form onSubmit={createUser} className="mb-5 grid gap-3 rounded-2xl bg-slate-50 p-4"><input placeholder="Full name" value={newUser.name} onChange={e => setNewUser({ ...newUser, name: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm" required /><input placeholder="Email" type="email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm" required /><input placeholder="Temporary password (8+ characters)" type="password" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm" required /><select value={newUser.user_type} onChange={e => setNewUser({ ...newUser, user_type: e.target.value })} className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm"><option value="admission_officer">Admission Officer</option><option value="teacher">Teacher</option><option value="headmaster">Headmaster</option><option value="accountant">Accountant</option><option value="librarian">Librarian</option><option value="hostel_master">Hostel Master</option><option value="security">Security</option></select><button className="rounded-xl bg-slate-900 px-3 py-2.5 text-sm font-bold text-white">Create account</button></form>}<div className="divide-y divide-slate-100">{users.map(user => <div key={user.id} className="flex items-center justify-between gap-3 py-3"><div><p className="text-sm font-bold text-slate-900">{user.name}</p><p className="text-xs text-slate-500">{user.email} · {user.user_type.replace('_', ' ')}</p></div><button onClick={() => toggleUser(user)} className={`rounded-full px-2 py-1 text-[10px] font-bold ${user.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{user.is_active ? 'Active' : 'Inactive'}</button></div>)}</div></section>
     </div>
-  );
+    <AcademicSetup />
+  </div>;
 };

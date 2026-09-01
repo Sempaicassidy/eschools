@@ -2,7 +2,6 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard,
-  Building2,
   Users,
   GraduationCap,
   CalendarCheck,
@@ -25,13 +24,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
   const getMenuItems = () => {
     switch (role) {
-      case 'super_admin':
-        return [
-          { id: 'dashboard', label: 'System Overview', icon: LayoutDashboard },
-          { id: 'schools', label: 'Registered Schools', icon: Building2 },
-          { id: 'subscriptions', label: 'Subscriptions & Billing', icon: CreditCard },
-          { id: 'announcements', label: 'Global Announcements', icon: Bell },
-        ];
       case 'school_admin':
       case 'headmaster':
         return [
@@ -42,6 +34,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           { id: 'exams', label: 'Exams & Results', icon: Award },
           { id: 'finance', label: 'Fees & Finance', icon: CreditCard },
           { id: 'announcements', label: 'Announcements', icon: Bell },
+        ];
+      case 'admission_officer':
+        return [
+          { id: 'students', label: 'Admissions & Directory', icon: GraduationCap },
+          { id: 'announcements', label: 'School Announcements', icon: Bell },
         ];
       case 'teacher':
         return [
@@ -99,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           <div className="bg-sky-50/80 border border-sky-200/80 rounded-xl p-3 mb-6">
             <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold text-sky-700">
               <Building className="w-3.5 h-3.5" />
-              <span>Active Context</span>
+              <span>School Installation</span>
             </div>
             <p className="text-xs font-bold text-slate-900 truncate mt-0.5">{user.school.name}</p>
           </div>
