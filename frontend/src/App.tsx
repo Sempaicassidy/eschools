@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { RoleSwitcher } from './components/RoleSwitcher';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { Login } from './pages/Login';
-import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
 import { SchoolAdminDashboard } from './pages/SchoolAdminDashboard';
 import { TeacherPortal } from './pages/TeacherPortal';
 import { AccountantPortal } from './pages/AccountantPortal';
 import { ParentPortal } from './pages/ParentPortal';
 import { StudentPortal } from './pages/StudentPortal';
+import { StudentDirectory } from './components/StudentDirectory';
 
 const MainLayout: React.FC = () => {
-  const { user, role } = useAuth();
+  const { user, role, isRestoring } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  if (isRestoring) {
+    return <div className="min-h-screen grid place-items-center bg-slate-100 text-sm font-semibold text-slate-600">Loading E-Schools…</div>;
+  }
 
   if (!user) {
     return <Login />;
   }
 
   const renderDashboardContent = () => {
+    if (activeTab === 'students') {
+      return <StudentDirectory />;
+    }
+
     switch (role) {
-      case 'super_admin':
       case 'school_admin':
       case 'headmaster':
       case 'academic_master':
@@ -41,9 +47,6 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-800 antialiased">
-      {/* Top Floating Demo Role Switcher */}
-      <RoleSwitcher />
-
       <div className="flex-1 flex min-h-screen">
         {/* Navigation Sidebar */}
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
