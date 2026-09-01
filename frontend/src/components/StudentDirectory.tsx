@@ -255,13 +255,15 @@ export const StudentDirectory: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-xs transition-all self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{isAdmissionOfficer ? 'Register New Student' : 'Add Student Record'}</span>
-        </button>
+        {isAdmissionOfficer && (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-xs transition-all self-start sm:self-auto"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Register New Student</span>
+          </button>
+        )}
       </div>
 
       {/* Notice Banner */}
