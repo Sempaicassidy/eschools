@@ -27,6 +27,12 @@ class Student extends Model
         'nationality',
         'religion',
         'previous_school',
+        'class_teacher_name',
+        'class_monitor_name',
+        'hostel_name',
+        'hostel_master_name',
+        'blood_group',
+        'medical_notes',
     ];
 
     protected function casts(): array

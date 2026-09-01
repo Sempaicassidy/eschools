@@ -51,9 +51,15 @@ class StudentController extends Controller
             'nationality' => ['nullable', 'string'],
             'religion' => ['nullable', 'string'],
             'previous_school' => ['nullable', 'string'],
+            'class_teacher_name' => ['nullable', 'string'],
+            'class_monitor_name' => ['nullable', 'string'],
+            'hostel_name' => ['nullable', 'string'],
+            'hostel_master_name' => ['nullable', 'string'],
+            'blood_group' => ['nullable', 'string'],
+            'medical_notes' => ['nullable', 'string'],
         ]);
 
-        $data['school_id'] = $request->user()->school_id;
+        $data['school_id'] = config('school.id');
 
         $student = Student::create($data);
 
@@ -92,6 +98,12 @@ class StudentController extends Controller
             'admission_date' => ['nullable', 'date'],
             'status' => ['sometimes', 'in:active,transferred,graduated,suspended,inactive'],
             'boarding_status' => ['sometimes', 'in:day,boarding'],
+            'class_teacher_name' => ['nullable', 'string'],
+            'class_monitor_name' => ['nullable', 'string'],
+            'hostel_name' => ['nullable', 'string'],
+            'hostel_master_name' => ['nullable', 'string'],
+            'blood_group' => ['nullable', 'string'],
+            'medical_notes' => ['nullable', 'string'],
         ]);
 
         $student->update($data);

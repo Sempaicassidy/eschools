@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { api, MOCK_STUDENTS } from '../services/api';
+import { api, MOCK_STUDENTS, MOCK_MARKS } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import {
   GraduationCap,
@@ -15,14 +15,16 @@ import {
   Pencil,
   X,
   User,
-  ShieldAlert,
   ShieldCheck,
   Award,
   FileText,
   Printer,
-  CheckCircle,
-  AlertTriangle,
-  UserPlus
+  BookOpen,
+  HeartPulse,
+  UserCog,
+  Home,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 
 type StudentItem = {
@@ -44,10 +46,19 @@ type StudentItem = {
   admission_date?: string;
   religion?: string;
   nationality?: string;
+  previous_school?: string;
+  photo?: string;
   fee_balance?: number;
   status_reason?: string;
+  class_teacher_name?: string;
+  class_monitor_name?: string;
+  hostel_name?: string;
+  hostel_master_name?: string;
+  blood_group?: string;
+  medical_notes?: string;
   class_room?: { id: number; name: string };
   stream?: { id: number; name: string };
+  marks?: any[];
 };
 
 type OptionItem = { id: number; name: string };
@@ -65,8 +76,15 @@ const emptyStudentForm = {
   admission_date: new Date().toISOString().split('T')[0],
   religion: 'Christianity',
   nationality: 'Tanzanian',
+  previous_school: '',
   guardian_name: '',
   guardian_phone: '',
+  class_teacher_name: 'Tr. Alex Mhagama',
+  class_monitor_name: 'Josephat K. Mwita',
+  hostel_name: 'Kilimanjaro Hostel (Block B)',
+  hostel_master_name: 'Tr. Beatrice Kimaro',
+  blood_group: 'O+',
+  medical_notes: 'No known allergies',
 };
 
 export const StudentDirectory: React.FC = () => {
@@ -89,6 +107,7 @@ export const StudentDirectory: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [viewingStudent, setViewingStudent] = useState<StudentItem | null>(null);
+  const [activeProfileTab, setActiveProfileTab] = useState<'overview' | 'academic' | 'residency' | 'marks' | 'guardian'>('overview');
   const [governanceStudent, setGovernanceStudent] = useState<StudentItem | null>(null);
   const [governanceAction, setGovernanceAction] = useState<'transfer' | 'suspend' | 'graduate'>('transfer');
   const [governanceReason, setGovernanceReason] = useState<string>('');
@@ -123,6 +142,16 @@ export const StudentDirectory: React.FC = () => {
     loadData();
   }, []);
 
+  // Calculate age helper
+  const calculateAge = (dobString?: string) => {
+    if (!dobString) return '16 Years';
+    const dob = new Date(dobString);
+    const diffMs = Date.now() - dob.getTime();
+    const ageDate = new Date(diffMs);
+    const years = Math.abs(ageDate.getUTCFullYear() - 1970);
+    return isNaN(years) || years === 0 ? '16 Years' : `${years} Years`;
+  };
+
   // Filter logic
   const filteredStudents = students.filter((s) => {
     const fullName = `${s.first_name} ${s.middle_name || ''} ${s.last_name}`.toLowerCase();
@@ -144,9 +173,6 @@ export const StudentDirectory: React.FC = () => {
   const femaleCount = students.filter((s) => s.gender === 'female').length;
   const boardingCount = students.filter((s) => s.boarding_status === 'boarding').length;
   const dayCount = students.filter((s) => s.boarding_status === 'day').length;
-  const activeCount = students.filter((s) => s.status === 'active').length;
-  const suspendedCount = students.filter((s) => s.status === 'suspended').length;
-  const transferredCount = students.filter((s) => s.status === 'transferred').length;
 
   const handleRegisterStudent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +189,13 @@ export const StudentDirectory: React.FC = () => {
         admission_date: newStudent.admission_date || null,
         religion: newStudent.religion || null,
         nationality: newStudent.nationality || 'Tanzanian',
+        previous_school: newStudent.previous_school || null,
+        class_teacher_name: newStudent.class_teacher_name,
+        class_monitor_name: newStudent.class_monitor_name,
+        hostel_name: newStudent.hostel_name,
+        hostel_master_name: newStudent.hostel_master_name,
+        blood_group: newStudent.blood_group,
+        medical_notes: newStudent.medical_notes,
       };
 
       await api.post('/students', payload);
@@ -178,12 +211,18 @@ export const StudentDirectory: React.FC = () => {
         middle_name: newStudent.middle_name,
         last_name: newStudent.last_name,
         gender: newStudent.gender,
-        class_name: classes.find(c => String(c.id) === String(newStudent.class_room_id))?.name || 'Form I',
+        class_name: classes.find(c => String(c.id) === String(newStudent.class_room_id))?.name || 'Form II',
         stream_name: 'A',
         boarding_status: newStudent.boarding_status,
         status: 'active',
-        guardian_name: newStudent.guardian_name || 'N/A',
-        guardian_phone: newStudent.guardian_phone || 'N/A',
+        guardian_name: newStudent.guardian_name || 'Juma Mkwawa',
+        guardian_phone: newStudent.guardian_phone || '+255 784 112 233',
+        class_teacher_name: newStudent.class_teacher_name,
+        class_monitor_name: newStudent.class_monitor_name,
+        hostel_name: newStudent.hostel_name,
+        hostel_master_name: newStudent.hostel_master_name,
+        blood_group: newStudent.blood_group,
+        medical_notes: newStudent.medical_notes,
         fee_balance: 0,
       };
 
@@ -226,7 +265,7 @@ export const StudentDirectory: React.FC = () => {
         status: newStatus,
         status_reason: governanceReason,
       });
-      setNotice(`Executive Decision Executed: ${governanceStudent.first_name} ${governanceStudent.last_name} status updated to ${newStatus}.`);
+      setNotice(`Executive Action: ${governanceStudent.first_name} ${governanceStudent.last_name} status updated to ${newStatus}.`);
       setGovernanceStudent(null);
       setGovernanceReason('');
       loadData();
@@ -274,7 +313,6 @@ export const StudentDirectory: React.FC = () => {
         </div>
       )}
 
-
       {/* Summary KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
@@ -300,19 +338,21 @@ export const StudentDirectory: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Active Students</span>
             <span className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700"><UserCheck className="w-5 h-5" /></span>
           </div>
-          <p className="text-3xl font-black text-emerald-950 mt-4">{activeCount}</p>
+          <p className="text-3xl font-black text-emerald-950 mt-4">
+            {students.filter(s => s.status === 'active').length}
+          </p>
           <p className="text-[11px] font-semibold text-emerald-600 mt-1">Currently Attending</p>
         </div>
 
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Status Exceptions</span>
-            <span className="p-2.5 rounded-xl bg-amber-50 text-amber-700"><AlertTriangle className="w-5 h-5" /></span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Transferred / Suspended</span>
+            <span className="p-2.5 rounded-xl bg-amber-50 text-amber-700"><AlertCircle className="w-5 h-5" /></span>
           </div>
-          <p className="text-3xl font-black text-amber-950 mt-4">{suspendedCount + transferredCount}</p>
-          <p className="text-[11px] font-semibold text-amber-700 mt-1">
-            {suspendedCount} Suspended · {transferredCount} Transferred
+          <p className="text-3xl font-black text-amber-950 mt-4">
+            {students.filter(s => s.status === 'transferred' || s.status === 'suspended').length}
           </p>
+          <p className="text-[11px] font-semibold text-amber-700 mt-1">Status Exceptions</p>
         </div>
       </div>
 
@@ -465,35 +505,39 @@ export const StudentDirectory: React.FC = () => {
 
                       <td className="py-3.5 px-6 text-right">
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* View Profile */}
+                          {/* View Complete Student Dossier */}
                           <button
-                            onClick={() => setViewingStudent(student)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-sky-50 transition-all"
-                            title="View Full Student Record"
+                            onClick={() => {
+                              setViewingStudent(student);
+                              setActiveProfileTab('overview');
+                            }}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 text-[11px] font-bold transition-all"
+                            title="View Full Student Dossier"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>View Full Profile</span>
                           </button>
 
-                          {/* Edit (Admission Officer & Admin) */}
+                          {/* Edit Bio-Data */}
                           <button
                             onClick={() => setEditingStudent(student)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 transition-all"
-                            title="Edit Bio-Data"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-700 hover:bg-indigo-50 transition-all"
+                            title="Edit Student Bio-Data"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
 
-                          {/* Admin Executive Approval & Governance Action Button */}
+                          {/* Admin Executive Action Button */}
                           {isAdmin && (
                             <button
                               onClick={() => {
                                 setGovernanceStudent(student);
                                 setGovernanceAction('transfer');
                               }}
-                              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition-all"
+                              className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition-all"
                               title="Executive Action (Transfer/Suspend/Graduate)"
                             >
-                              Executive Decision
+                              Action
                             </button>
                           )}
                         </div>
@@ -507,15 +551,15 @@ export const StudentDirectory: React.FC = () => {
         )}
       </div>
 
-      {/* MODAL 1: REGISTER NEW STUDENT (Admission Officer / Admin) */}
+      {/* MODAL 1: REGISTER NEW STUDENT */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl space-y-4 my-8">
+          <div className="w-full max-w-2xl bg-white rounded-3xl p-6 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-sky-600" />
                 <h3 className="font-black text-slate-900 text-lg">
-                  {isAdmissionOfficer ? 'Admission Officer - Register Student' : 'Register New Student'}
+                  Register New Student Admission
                 </h3>
               </div>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
@@ -588,7 +632,7 @@ export const StudentDirectory: React.FC = () => {
                 </label>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid sm:grid-cols-3 gap-3">
                 <label className="block text-xs font-bold text-slate-700">
                   Class Assigned
                   <select
@@ -603,6 +647,15 @@ export const StudentDirectory: React.FC = () => {
                   </select>
                 </label>
                 <label className="block text-xs font-bold text-slate-700">
+                  Date of Birth
+                  <input
+                    className={inputStyle}
+                    type="date"
+                    value={newStudent.date_of_birth}
+                    onChange={(e) => setNewStudent({ ...newStudent, date_of_birth: e.target.value })}
+                  />
+                </label>
+                <label className="block text-xs font-bold text-slate-700">
                   Admission Date
                   <input
                     className={inputStyle}
@@ -613,6 +666,50 @@ export const StudentDirectory: React.FC = () => {
                 </label>
               </div>
 
+              {/* Class & Hostel Staff Details */}
+              <div className="grid sm:grid-cols-2 gap-3 border-t border-slate-100 pt-3">
+                <label className="block text-xs font-bold text-slate-700">
+                  Mwalimu wa Darasa (Class Teacher)
+                  <input
+                    className={inputStyle}
+                    value={newStudent.class_teacher_name}
+                    onChange={(e) => setNewStudent({ ...newStudent, class_teacher_name: e.target.value })}
+                    placeholder="Tr. Alex Mhagama"
+                  />
+                </label>
+                <label className="block text-xs font-bold text-slate-700">
+                  Class Monitor (Monita wa Darasa)
+                  <input
+                    className={inputStyle}
+                    value={newStudent.class_monitor_name}
+                    onChange={(e) => setNewStudent({ ...newStudent, class_monitor_name: e.target.value })}
+                    placeholder="Josephat K. Mwita"
+                  />
+                </label>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <label className="block text-xs font-bold text-slate-700">
+                  Bweni la Mwanafunzi (Hostel Name)
+                  <input
+                    className={inputStyle}
+                    value={newStudent.hostel_name}
+                    onChange={(e) => setNewStudent({ ...newStudent, hostel_name: e.target.value })}
+                    placeholder="Kilimanjaro Hostel (Block B)"
+                  />
+                </label>
+                <label className="block text-xs font-bold text-slate-700">
+                  Mwalimu Msimamizi wa Bweni (Hostel Master)
+                  <input
+                    className={inputStyle}
+                    value={newStudent.hostel_master_name}
+                    onChange={(e) => setNewStudent({ ...newStudent, hostel_master_name: e.target.value })}
+                    placeholder="Tr. Beatrice Kimaro"
+                  />
+                </label>
+              </div>
+
+              {/* Guardian Info */}
               <div className="grid sm:grid-cols-2 gap-3 border-t border-slate-100 pt-3">
                 <label className="block text-xs font-bold text-slate-700">
                   Guardian Full Name
@@ -654,7 +751,314 @@ export const StudentDirectory: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 2: ADMIN EXECUTIVE DECISION (Transfers, Suspensions, Graduation) */}
+      {/* MODAL 2: VIEW COMPREHENSIVE STUDENT PROFILE & DOSSIER */}
+      {viewingStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="w-full max-w-4xl bg-white rounded-3xl p-6 md:p-8 shadow-2xl space-y-6 my-6 border border-slate-100">
+            {/* Modal Header Bar */}
+            <div className="flex items-start justify-between border-b border-slate-100 pb-5">
+              <div className="flex items-center gap-4">
+                {/* Photo / Avatar */}
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl text-white shadow-lg ${
+                  viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-600 via-blue-600 to-indigo-700' : 'bg-gradient-to-tr from-rose-500 via-pink-600 to-purple-700'
+                }`}>
+                  {viewingStudent.photo ? (
+                    <img src={viewingStudent.photo} alt={viewingStudent.first_name} className="w-full h-full object-cover rounded-2xl" />
+                  ) : (
+                    viewingStudent.first_name.charAt(0)
+                  )}
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-black text-slate-900 text-xl md:text-2xl leading-snug">
+                      {viewingStudent.first_name} {viewingStudent.middle_name} {viewingStudent.last_name}
+                    </h2>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                      viewingStudent.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                      viewingStudent.status === 'suspended' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
+                      'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}>
+                      {viewingStudent.status}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1 font-medium">
+                    <span className="font-mono bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-800">
+                      Admission No: {viewingStudent.admission_number}
+                    </span>
+                    <span>• Age: {calculateAge(viewingStudent.date_of_birth)}</span>
+                    <span>• Gender: <strong className="capitalize text-slate-800">{viewingStudent.gender}</strong></span>
+                    <span>• Nationality: <strong className="text-slate-800">{viewingStudent.nationality || 'Tanzanian'}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all"
+                  title="Print Student Dossier"
+                >
+                  <Printer className="w-4 h-4 text-slate-600" />
+                  <span className="hidden sm:inline">Print File</span>
+                </button>
+                <button onClick={() => setViewingStudent(null)} className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Profile Navigation Tabs */}
+            <div className="flex flex-wrap items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl text-xs font-bold">
+              <button
+                onClick={() => setActiveProfileTab('overview')}
+                className={`px-4 py-2 rounded-xl transition-all ${
+                  activeProfileTab === 'overview' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Profile & Bio Overview
+              </button>
+              <button
+                onClick={() => setActiveProfileTab('academic')}
+                className={`px-4 py-2 rounded-xl transition-all ${
+                  activeProfileTab === 'academic' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Academic & Class Teachers
+              </button>
+              <button
+                onClick={() => setActiveProfileTab('residency')}
+                className={`px-4 py-2 rounded-xl transition-all ${
+                  activeProfileTab === 'residency' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Hostel & Boarding
+              </button>
+              <button
+                onClick={() => setActiveProfileTab('marks')}
+                className={`px-4 py-2 rounded-xl transition-all ${
+                  activeProfileTab === 'marks' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Exam Results & Grades
+              </button>
+              <button
+                onClick={() => setActiveProfileTab('guardian')}
+                className={`px-4 py-2 rounded-xl transition-all ${
+                  activeProfileTab === 'guardian' ? 'bg-white text-sky-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Parent & Guardian Contacts
+              </button>
+            </div>
+
+            {/* TAB CONTENT 1: OVERVIEW */}
+            {activeProfileTab === 'overview' && (
+              <div className="space-y-4 text-xs">
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 block">Assigned Class</span>
+                    <p className="text-base font-black text-slate-900">
+                      {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 block">Residency Type</span>
+                    <p className="text-base font-black text-indigo-950 capitalize">
+                      {viewingStudent.boarding_status === 'boarding' ? 'Boarder (Hostel Resident)' : 'Day Scholar'}
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+                    <span className="text-[11px] font-semibold text-slate-400 block">Fee Balance Status</span>
+                    <p className="text-base font-black text-emerald-700">
+                      TZS {viewingStudent.fee_balance !== undefined ? viewingStudent.fee_balance.toLocaleString() : '150,000'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Bio Details */}
+                  <div className="border border-slate-100 bg-white p-4 rounded-2xl space-y-2.5">
+                    <h4 className="font-extrabold text-slate-900 text-sm border-b border-slate-100 pb-2">Personal Information</h4>
+                    <div className="space-y-1.5 text-slate-600">
+                      <p><strong className="text-slate-900">Full Name:</strong> {viewingStudent.first_name} {viewingStudent.middle_name} {viewingStudent.last_name}</p>
+                      <p><strong className="text-slate-900">Date of Birth:</strong> {viewingStudent.date_of_birth || '15th March 2010'} ({calculateAge(viewingStudent.date_of_birth)})</p>
+                      <p><strong className="text-slate-900">Gender:</strong> <span className="capitalize">{viewingStudent.gender}</span></p>
+                      <p><strong className="text-slate-900">Religion:</strong> {viewingStudent.religion || 'Christianity'}</p>
+                      <p><strong className="text-slate-900">Blood Group:</strong> {viewingStudent.blood_group || 'O+'}</p>
+                    </div>
+                  </div>
+
+                  {/* Guardian & Admission Details */}
+                  <div className="border border-slate-100 bg-white p-4 rounded-2xl space-y-2.5">
+                    <h4 className="font-extrabold text-slate-900 text-sm border-b border-slate-100 pb-2">Admission & Guardian Overview</h4>
+                    <div className="space-y-1.5 text-slate-600">
+                      <p><strong className="text-slate-900">Admission Date:</strong> {viewingStudent.admission_date || '2026-01-10'}</p>
+                      <p><strong className="text-slate-900">Previous School:</strong> {viewingStudent.previous_school || 'Mwenge Primary School'}</p>
+                      <p><strong className="text-slate-900">Primary Guardian:</strong> {viewingStudent.guardian_name || 'Juma Mkwawa'}</p>
+                      <p><strong className="text-slate-900">Guardian Phone:</strong> {viewingStudent.guardian_phone || '+255 784 112 233'}</p>
+                      <p><strong className="text-slate-900">Medical Notes:</strong> {viewingStudent.medical_notes || 'No known chronic allergies'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT 2: ACADEMIC & CLASS TEACHERS */}
+            {activeProfileTab === 'academic' && (
+              <div className="space-y-4 text-xs">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Class Teacher Box */}
+                  <div className="bg-sky-50/70 border border-sky-200/80 p-5 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-sky-800 font-bold text-sm">
+                      <UserCog className="w-5 h-5 text-sky-600" />
+                      <span>Mwalimu wa Darasa (Class Teacher)</span>
+                    </div>
+                    <p className="text-base font-black text-slate-900">
+                      {viewingStudent.class_teacher_name || 'Tr. Alex Mhagama'}
+                    </p>
+                    <p className="text-slate-500 font-medium text-xs">
+                      Responsible for academic monitoring, term reports, and daily student guidance for {viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'}.
+                    </p>
+                  </div>
+
+                  {/* Class Monitor Box */}
+                  <div className="bg-indigo-50/70 border border-indigo-200/80 p-5 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-indigo-800 font-bold text-sm">
+                      <UserCheck className="w-5 h-5 text-indigo-600" />
+                      <span>Class Monitor (Monita wa Darasa)</span>
+                    </div>
+                    <p className="text-base font-black text-slate-900">
+                      {viewingStudent.class_monitor_name || 'Josephat K. Mwita'}
+                    </p>
+                    <p className="text-slate-500 font-medium text-xs">
+                      Class prefect responsible for class discipline, subject logbook signatures, and classroom order.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT 3: HOSTEL & BOARDING */}
+            {activeProfileTab === 'residency' && (
+              <div className="space-y-4 text-xs">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Hostel Details Box */}
+                  <div className="bg-indigo-50/70 border border-indigo-200/80 p-5 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm">
+                      <Home className="w-5 h-5 text-indigo-600" />
+                      <span>Bweni la Mwanafunzi (Hostel / Dormitory)</span>
+                    </div>
+                    <p className="text-base font-black text-slate-900">
+                      {viewingStudent.boarding_status === 'boarding'
+                        ? (viewingStudent.hostel_name || 'Kilimanjaro Hostel (Block B - Room 12)')
+                        : 'Day Scholar (No Hostel Allocated)'}
+                    </p>
+                    <p className="text-slate-500 font-medium text-xs">
+                      Resident dormitory block assigned for student boarding and evening prep studies.
+                    </p>
+                  </div>
+
+                  {/* Hostel Master Box */}
+                  <div className="bg-purple-50/70 border border-purple-200/80 p-5 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-purple-900 font-bold text-sm">
+                      <UserCog className="w-5 h-5 text-purple-600" />
+                      <span>Mwalimu Msimamizi wa Bweni (Hostel Master/Matron)</span>
+                    </div>
+                    <p className="text-base font-black text-slate-900">
+                      {viewingStudent.boarding_status === 'boarding'
+                        ? (viewingStudent.hostel_master_name || 'Tr. Beatrice Kimaro')
+                        : 'N/A (Day Scholar)'}
+                    </p>
+                    <p className="text-slate-500 font-medium text-xs">
+                      Patron/Matron in charge of evening welfare, dorm cleanliness, and prep attendance.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT 4: EXAM RESULTS & MARKS */}
+            {activeProfileTab === 'marks' && (
+              <div className="space-y-4 text-xs">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-black text-slate-900 text-sm">Term II Examination Results Summary</h4>
+                  <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
+                    Class Rank: #3 / 45 Students (Average: 82.8% - Grade A)
+                  </span>
+                </div>
+
+                <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-xs">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 text-slate-500 font-bold text-[11px] uppercase border-b border-slate-100">
+                        <th className="p-3">Subject</th>
+                        <th className="p-3">Score</th>
+                        <th className="p-3">Grade</th>
+                        <th className="p-3">Points</th>
+                        <th className="p-3">Teacher Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                      {MOCK_MARKS.map((m) => (
+                        <tr key={m.id}>
+                          <td className="p-3 font-bold text-slate-900">{m.subject_name}</td>
+                          <td className="p-3 font-mono font-bold text-slate-800">{m.score}%</td>
+                          <td className="p-3">
+                            <span className="px-2 py-0.5 rounded font-black text-[10px] bg-emerald-100 text-emerald-800">
+                              Grade {m.grade}
+                            </span>
+                          </td>
+                          <td className="p-3 font-bold">{m.points} pts</td>
+                          <td className="p-3 text-slate-500">{m.remarks}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT 5: GUARDIANS */}
+            {activeProfileTab === 'guardian' && (
+              <div className="space-y-4 text-xs">
+                <div className="bg-sky-50/70 border border-sky-200/80 p-5 rounded-2xl space-y-3">
+                  <h4 className="font-black text-sky-950 text-sm flex items-center gap-2">
+                    <User className="w-4 h-4 text-sky-600" /> Primary Parent & Guardian Details
+                  </h4>
+                  <div className="grid sm:grid-cols-2 gap-3 text-slate-700">
+                    <div>
+                      <span className="text-slate-400 font-semibold block text-[10px]">Guardian Full Name</span>
+                      <span className="font-extrabold text-slate-900 text-sm">{viewingStudent.guardian_name || 'Juma Mkwawa'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 font-semibold block text-[10px]">Contact Phone Number</span>
+                      <span className="font-extrabold text-sky-800 text-sm flex items-center gap-1">
+                        <Phone className="w-3.5 h-3.5" />
+                        {viewingStudent.guardian_phone || '+255 784 112 233'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Close Button */}
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+              <button
+                onClick={() => setViewingStudent(null)}
+                className="bg-slate-900 hover:bg-black text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-md transition-all"
+              >
+                Close Dossier
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: ADMIN EXECUTIVE GOVERNANCE */}
       {governanceStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
           <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-4">
@@ -719,76 +1123,12 @@ export const StudentDirectory: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL 3: VIEW FULL PROFILE */}
-      {viewingStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm text-white shadow-md ${
-                  viewingStudent.gender === 'male' ? 'bg-gradient-to-tr from-sky-600 to-blue-600' : 'bg-gradient-to-tr from-rose-500 to-pink-600'
-                }`}>
-                  {viewingStudent.first_name.charAt(0)}
-                </div>
-                <div>
-                  <h3 className="font-black text-slate-900 text-base">
-                    {viewingStudent.first_name} {viewingStudent.middle_name} {viewingStudent.last_name}
-                  </h3>
-                  <p className="text-xs font-mono text-slate-400">{viewingStudent.admission_number}</p>
-                </div>
-              </div>
-              <button onClick={() => setViewingStudent(null)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div>
-                  <span className="text-slate-400 font-semibold block text-[10px]">Class & Stream</span>
-                  <span className="font-extrabold text-slate-900">{viewingStudent.class_room?.name || viewingStudent.class_name || 'Form II'} - Stream A</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-semibold block text-[10px]">Boarding Status</span>
-                  <span className="font-extrabold capitalize text-slate-900">{viewingStudent.boarding_status}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div>
-                  <span className="text-slate-400 font-semibold block text-[10px]">Gender</span>
-                  <span className="font-bold capitalize text-slate-900">{viewingStudent.gender}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-semibold block text-[10px]">Account Status</span>
-                  <span className="font-bold capitalize text-emerald-700">{viewingStudent.status}</span>
-                </div>
-              </div>
-
-              <div className="bg-sky-50 border border-sky-100 p-3 rounded-2xl space-y-1">
-                <span className="text-sky-700 font-bold block text-[11px]">Guardian Details</span>
-                <p className="font-extrabold text-slate-900">{viewingStudent.guardian_name || 'Juma Mkwawa'}</p>
-                <p className="text-slate-600 font-medium flex items-center gap-1.5">
-                  <Phone className="w-3 h-3 text-sky-600" />
-                  <span>{viewingStudent.guardian_phone || '+255 784 112 233'}</span>
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setViewingStudent(null)}
-              className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-slate-800"
-            >
-              Close Profile
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* EDIT MODAL */}
       {editingStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 my-8">
+          <div className="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-black text-slate-900 text-lg">Edit Student Record</h3>
+              <h3 className="font-black text-slate-900 text-lg">Edit Student Record & Staff Details</h3>
               <button onClick={() => setEditingStudent(null)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
             </div>
 
@@ -816,26 +1156,39 @@ export const StudentDirectory: React.FC = () => {
 
               <div className="grid sm:grid-cols-2 gap-3">
                 <label className="block text-xs font-bold text-slate-700">
-                  Gender
-                  <select
+                  Mwalimu wa Darasa (Class Teacher)
+                  <input
                     className={inputStyle}
-                    value={editingStudent.gender}
-                    onChange={(e) => setEditingStudent({ ...editingStudent, gender: e.target.value as any })}
-                  >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                  </select>
+                    value={editingStudent.class_teacher_name || ''}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, class_teacher_name: e.target.value })}
+                  />
                 </label>
                 <label className="block text-xs font-bold text-slate-700">
-                  Residency Status
-                  <select
+                  Class Monitor (Monita wa Darasa)
+                  <input
                     className={inputStyle}
-                    value={editingStudent.boarding_status}
-                    onChange={(e) => setEditingStudent({ ...editingStudent, boarding_status: e.target.value as any })}
-                  >
-                    <option value="day">Day Scholar</option>
-                    <option value="boarding">Boarding</option>
-                  </select>
+                    value={editingStudent.class_monitor_name || ''}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, class_monitor_name: e.target.value })}
+                  />
+                </label>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <label className="block text-xs font-bold text-slate-700">
+                  Bweni la Mwanafunzi (Hostel Name)
+                  <input
+                    className={inputStyle}
+                    value={editingStudent.hostel_name || ''}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, hostel_name: e.target.value })}
+                  />
+                </label>
+                <label className="block text-xs font-bold text-slate-700">
+                  Mwalimu Msimamizi wa Bweni (Hostel Master)
+                  <input
+                    className={inputStyle}
+                    value={editingStudent.hostel_master_name || ''}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, hostel_master_name: e.target.value })}
+                  />
                 </label>
               </div>
 
