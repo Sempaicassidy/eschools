@@ -22,9 +22,9 @@ const MainLayout: React.FC = () => {
   const renderDashboardContent = () => {
     switch (role) {
       case 'super_admin':
-        return <SuperAdminDashboard />;
       case 'school_admin':
       case 'headmaster':
+      case 'academic_master':
         return <SchoolAdminDashboard />;
       case 'teacher':
         return <TeacherPortal />;

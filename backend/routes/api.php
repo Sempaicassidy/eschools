@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Route;
 // API Root Information Endpoint
 Route::get('/', function () {
     return response()->json([
-        'name' => 'Haula Smart Campus / eSchool REST API Engine',
+        'name' => 'E-Schools Standalone REST API Engine',
         'version' => '1.0.0',
+        'mode' => 'single-tenant',
         'status' => 'online',
         'timestamp' => now()->toIso8601String(),
     ]);
@@ -26,7 +27,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-    // Schools (Super Admin)
+    // Single School Profile
+    Route::get('/school/profile', function () {
+        return response()->json(\App\Models\School::find(1));
+    });
     Route::apiResource('schools', SchoolController::class);
 
     // Students

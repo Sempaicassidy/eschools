@@ -7,10 +7,9 @@ export const RoleSwitcher: React.FC = () => {
   const { role, switchRole } = useAuth();
 
   const rolesList: { id: UserRole; label: string; icon: any }[] = [
-    { id: 'super_admin', label: 'Super Admin', icon: ShieldAlert },
-    { id: 'school_admin', label: 'Headmaster', icon: Shield },
+    { id: 'school_admin', label: 'School Admin / Headmaster', icon: Shield },
     { id: 'teacher', label: 'Teacher Portal', icon: BookOpen },
-    { id: 'accountant', label: 'Accountant', icon: CreditCard },
+    { id: 'accountant', label: 'Bursar / Accountant', icon: CreditCard },
     { id: 'parent', label: 'Parent Portal', icon: Users },
     { id: 'student', label: 'Student Portal', icon: GraduationCap },
   ];

@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-2 bg-sky-50 text-sky-700 border border-sky-200 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-sky-600" />
-          <span>Haula eSchool SaaS v1.0</span>
+          <span>E-Schools Standalone v1.0</span>
         </div>
 
         <button className="relative p-2 text-slate-500 hover:text-sky-600 hover:bg-sky-50 rounded-xl transition-all border border-transparent hover:border-sky-200">
